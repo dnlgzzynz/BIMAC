@@ -180,9 +180,9 @@ mindmap
 
 ### Automatización de Flujos de Trabajo
 
-| Herramienta | Uso |
-|-------------|-----|
-| **n8n** | Automatización de workflows, integraciones API y orquestación de procesos |
+| Herramienta | Hosting | Uso |
+|-------------|---------|-----|
+| **n8n** | Self-hosted en Hostinger | Automatización de workflows, integraciones API y orquestación de procesos |
 
 ### Desarrollo y Sistema
 
