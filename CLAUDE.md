@@ -1,6 +1,6 @@
 # CLAUDE.md - Guía de Asistente IA para BIMAC
 
-**Última Actualización:** 2025-11-29
+**Última Actualización:** 2025-12-22
 **Proyecto:** BIMAC - BIM + AI + Construcción
 **Repositorio:** dnlgzzynz/BIMAC
 **Dominio Principal:** bimac.io | bimacstudio.com
@@ -128,48 +128,56 @@ mindmap
 
 ### Modelado BIM / CAD / 3D
 
-| Herramienta | Categoría | Uso Principal |
-|-------------|-----------|---------------|
-| **Revit** | BIM Authoring | Modelado arquitectónico y MEP |
-| **Civil 3D** | Infraestructura | Diseño civil y topografía |
-| **Infraworks** | Diseño conceptual | Visualización de infraestructura |
-| **Navisworks** | Coordinación | Detección de interferencias |
-| **Rhino** | Modelado 3D | Geometrías complejas y NURBS |
-| **Rhino.inside.Revit** | Integración | Puente Rhino-Revit |
-| **Grasshopper** | Diseño paramétrico | Algoritmos visuales |
-| **FreeCAD** | CAD Open Source | Modelado paramétrico libre |
-| **Blender** | 3D Generalista | Visualización y animación |
-| **Twinmotion** | Renderizado | Visualización en tiempo real |
-
-### Plugins y Extensiones BIM
-
-| Plugin | Plataforma | Función |
-|--------|------------|---------|
-| **PyRevit** | Revit | Automatización con Python |
-| **Antigravity** | Revit | Herramientas de productividad |
+| Herramienta | Uso |
+|-------------|-----|
+| **Revit** | Modelado arquitectónico, estructural y MEP |
+| **AutoCAD** | Dibujo 2D y documentación |
+| **Civil 3D** | Infraestructura y topografía |
+| **Infraworks** | Diseño conceptual de infraestructura |
+| **Rhino + Grasshopper** | Diseño paramétrico y geometrías complejas |
+| **Rhino.Inside.Revit** | Integración bidireccional Rhino-Revit |
+| **Navisworks** | Coordinación y clash detection |
+| **FreeCAD** | Modelado paramétrico open source |
+| **Blender / Twinmotion** | Visualización y renderizado |
+| **Three.js** | Visualización 3D web |
 
 ### Coordinación y 4D
 
-| Herramienta | Función |
-|-------------|---------|
-| **Synchro 4D** | Simulación de construcción 4D |
+| Herramienta | Uso |
+|-------------|-----|
+| **Navisworks** | Federación, clash detection, 4D básico |
+| **Synchro 4D** | Simulación de construcción avanzada |
 | **BIMcollab ZOOM** | Revisión BCF y coordinación |
+| **BIMvision** | Visor IFC gratuito |
 
-### Productividad y Gestión de Conocimiento
+### Automatización
+
+| Herramienta | Uso |
+|-------------|-----|
+| **n8n** | Orquestación de workflows (self-hosted en Hostinger) |
+| **PyRevit** | Automatización en Revit con Python |
+| **Dynamo** | Programación visual para Revit |
+| **Autodesk Construction Cloud** | Colaboración y gestión en la nube |
+| **Docker** | Contenedorización y despliegue local |
+
+### Productividad
 
 | Herramienta | Uso |
 |-------------|-----|
 | **Notion** | Gestión de proyectos y documentación |
 | **Obsidian** | Base de conocimiento personal (PKM) |
 | **Airtable** | Bases de datos relacionales |
+| **Google Workspace** | Suite colaborativa (Gmail, Drive, Docs) |
 
-### IA / LLM / Herramientas de Lenguaje
+### IA / LLM
 
-| Herramienta | Aplicación |
-|-------------|------------|
+| Herramienta | Uso |
+|-------------|-----|
+| **Claude Code** | Asistente IA para desarrollo (desktop) |
 | **Perplexity** | Búsqueda aumentada con IA |
 | **NotebookLM** | Análisis de documentos |
 | **LM Studio** | Ejecución local de LLMs |
+| **Antigravity** | IA integrada para Revit |
 
 ### Web y Presencia Online
 
@@ -177,19 +185,7 @@ mindmap
 |------------|-------|
 | **WordPress** | www.bimac.io |
 | **Squarespace** | www.bimacstudio.com |
-
-### Automatización de Flujos de Trabajo
-
-| Herramienta | Hosting | Uso |
-|-------------|---------|-----|
-| **n8n** | Self-hosted en Hostinger | Automatización de workflows, integraciones API y orquestación de procesos |
-
-### Desarrollo y Sistema
-
-| Herramienta | Uso |
-|-------------|-----|
-| **Docker** | Contenedorización y despliegue |
-| **Inkscape** | Gráficos vectoriales 2D |
+| **Hostinger** | Hosting para n8n y servicios |
 
 ### Suite de Trabajo
 
@@ -646,6 +642,7 @@ Antes de cada commit verificar:
 
 | Fecha | Cambio |
 |-------|--------|
+| 2025-12-22 | Actualización de Stack Tecnológico (Three.js, BIMvision, ACC, Claude Code) |
 | 2025-11-29 | Creación completa del CLAUDE.md especializado para BIMAC |
 | 2025-11-14 | Versión inicial genérica |
 
