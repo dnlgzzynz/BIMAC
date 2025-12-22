@@ -454,7 +454,10 @@ BIMAC/
 │
 ├── scripts/                     # Automatización
 │   ├── revit/                   # Scripts PyRevit
+│   ├── dynamo/                  # Definiciones Dynamo
 │   ├── grasshopper/             # Definiciones GH
+│   ├── freecad/                 # Macros FreeCAD
+│   ├── blender/                 # Scripts Blender
 │   ├── python/                  # Utilidades Python
 │   └── shell/                   # Scripts de sistema
 │
