@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import * as OBC from '@thatopen/components';
 import * as OBCF from '@thatopen/components-front';
+import { MLPostProcessor } from './ml/MLPostProcessor.js';
 
 // Initialize the IFC Viewer Application
 class IFCViewerApp {
@@ -16,6 +17,12 @@ class IFCViewerApp {
     this.isWireframe = false;
     this.isOrtho = false;
 
+    // ML Post-processing
+    this.mlProcessor = null;
+    this.mlEnabled = false;
+    this.mlOutputCanvas = null;
+    this.isProcessing = false;
+
     this.init();
   }
 
@@ -23,10 +30,307 @@ class IFCViewerApp {
     try {
       await this.setupScene();
       this.setupEventListeners();
+      await this.setupMLProcessor();
       this.updateStatus('Listo - Carga un modelo IFC para comenzar');
     } catch (error) {
       console.error('Error initializing viewer:', error);
       this.updateStatus('Error al inicializar el visor', true);
+    }
+  }
+
+  async setupMLProcessor() {
+    try {
+      // Create ML output canvas
+      this.mlOutputCanvas = document.createElement('canvas');
+      this.mlOutputCanvas.id = 'ml-output-canvas';
+      this.mlOutputCanvas.className = 'hidden';
+      document.getElementById('viewer-container').appendChild(this.mlOutputCanvas);
+
+      // Create processing indicator
+      const indicator = document.createElement('div');
+      indicator.id = 'processing-indicator';
+      indicator.className = 'processing-indicator hidden';
+      indicator.innerHTML = '<span class="processing-dot"></span>Processing ML...';
+      document.getElementById('viewer-container').appendChild(indicator);
+
+      // Initialize ML processor after renderer is ready
+      const renderer = this.world.renderer.three;
+      this.mlProcessor = new MLPostProcessor(renderer);
+
+      const result = await this.mlProcessor.init();
+
+      // Update ML panel status
+      const backendEl = document.getElementById('ml-backend');
+      if (backendEl) {
+        backendEl.textContent = `Backend: ${result.success ? result.backend.toUpperCase() : 'Failed'}`;
+      }
+
+      if (result.success) {
+        console.log('ML PostProcessor ready with', result.backend);
+        this.setupMLEventListeners();
+      }
+    } catch (error) {
+      console.error('Failed to setup ML processor:', error);
+    }
+  }
+
+  setupMLEventListeners() {
+    // Quick toggle buttons
+    const mlButtons = {
+      'btn-ml-denoise': 'denoise',
+      'btn-ml-ssao': 'ssao',
+      'btn-ml-sharpen': 'sharpen',
+      'btn-ml-edges': 'edgeEnhance'
+    };
+
+    for (const [btnId, effect] of Object.entries(mlButtons)) {
+      const btn = document.getElementById(btnId);
+      if (btn) {
+        btn.addEventListener('click', () => this.toggleMLEffect(effect, btn));
+      }
+    }
+
+    // Settings panel toggle
+    const btnSettings = document.getElementById('btn-ml-settings');
+    const mlPanel = document.getElementById('ml-panel');
+    const btnCloseML = document.getElementById('btn-close-ml');
+
+    if (btnSettings && mlPanel) {
+      btnSettings.addEventListener('click', () => {
+        mlPanel.classList.toggle('hidden');
+        this.updateMLMemoryInfo();
+      });
+    }
+
+    if (btnCloseML && mlPanel) {
+      btnCloseML.addEventListener('click', () => {
+        mlPanel.classList.add('hidden');
+      });
+    }
+
+    // Panel toggles
+    this.setupMLPanelControls();
+
+    // Apply and Reset buttons
+    const btnApply = document.getElementById('btn-ml-apply');
+    const btnReset = document.getElementById('btn-ml-reset');
+
+    if (btnApply) {
+      btnApply.addEventListener('click', () => this.applyMLEffects());
+    }
+
+    if (btnReset) {
+      btnReset.addEventListener('click', () => this.resetMLEffects());
+    }
+
+    // Range input updates
+    this.setupRangeInputs();
+  }
+
+  setupMLPanelControls() {
+    const toggles = {
+      'ml-denoise-toggle': 'denoise',
+      'ml-ssao-toggle': 'ssao',
+      'ml-sharpen-toggle': 'sharpen',
+      'ml-edges-toggle': 'edgeEnhance',
+      'ml-color-toggle': 'colorGrading'
+    };
+
+    for (const [toggleId, effect] of Object.entries(toggles)) {
+      const toggle = document.getElementById(toggleId);
+      if (toggle) {
+        toggle.addEventListener('change', (e) => {
+          if (e.target.checked) {
+            this.mlProcessor.enableEffect(effect);
+          } else {
+            this.mlProcessor.disableEffect(effect);
+          }
+          this.syncToolbarButtons();
+        });
+      }
+    }
+  }
+
+  setupRangeInputs() {
+    // Denoise strength
+    this.setupRangeInput('ml-denoise-strength', (value) => {
+      this.mlProcessor.setParams('denoise', { strength: value / 100 });
+      return `${value}%`;
+    });
+
+    // SSAO
+    this.setupRangeInput('ml-ssao-radius', (value) => {
+      this.mlProcessor.setParams('ssao', { radius: value });
+      return value;
+    });
+
+    this.setupRangeInput('ml-ssao-intensity', (value) => {
+      this.mlProcessor.setParams('ssao', { intensity: value / 100 });
+      return (value / 100).toFixed(1);
+    });
+
+    // Sharpen
+    this.setupRangeInput('ml-sharpen-amount', (value) => {
+      this.mlProcessor.setParams('sharpen', { amount: value / 100 });
+      return `${value}%`;
+    });
+
+    // Edge enhancement
+    this.setupRangeInput('ml-edges-strength', (value) => {
+      this.mlProcessor.setParams('edgeEnhance', { strength: value / 100 });
+      return `${value}%`;
+    });
+
+    // Color grading
+    this.setupRangeInput('ml-color-exposure', (value) => {
+      this.mlProcessor.setParams('colorGrading', { exposure: value / 100 });
+      return (value / 100).toFixed(1);
+    });
+
+    this.setupRangeInput('ml-color-contrast', (value) => {
+      this.mlProcessor.setParams('colorGrading', { contrast: value / 100 });
+      return (value / 100).toFixed(1);
+    });
+
+    this.setupRangeInput('ml-color-saturation', (value) => {
+      this.mlProcessor.setParams('colorGrading', { saturation: value / 100 });
+      return (value / 100).toFixed(1);
+    });
+  }
+
+  setupRangeInput(inputId, updateFn) {
+    const input = document.getElementById(inputId);
+    if (input) {
+      const valueSpan = input.parentElement.querySelector('.range-value');
+      input.addEventListener('input', (e) => {
+        const value = parseInt(e.target.value);
+        if (valueSpan) {
+          valueSpan.textContent = updateFn(value);
+        }
+      });
+    }
+  }
+
+  toggleMLEffect(effect, button) {
+    if (!this.mlProcessor) return;
+
+    const isEnabled = this.mlProcessor.toggleEffect(effect);
+    button.classList.toggle('active', isEnabled);
+
+    // Sync panel checkbox
+    const toggleMap = {
+      'denoise': 'ml-denoise-toggle',
+      'ssao': 'ml-ssao-toggle',
+      'sharpen': 'ml-sharpen-toggle',
+      'edgeEnhance': 'ml-edges-toggle'
+    };
+
+    const checkboxId = toggleMap[effect];
+    if (checkboxId) {
+      const checkbox = document.getElementById(checkboxId);
+      if (checkbox) checkbox.checked = isEnabled;
+    }
+
+    this.updateStatus(`ML Effect: ${effect} ${isEnabled ? 'enabled' : 'disabled'}`);
+  }
+
+  syncToolbarButtons() {
+    const buttonMap = {
+      'denoise': 'btn-ml-denoise',
+      'ssao': 'btn-ml-ssao',
+      'sharpen': 'btn-ml-sharpen',
+      'edgeEnhance': 'btn-ml-edges'
+    };
+
+    for (const [effect, btnId] of Object.entries(buttonMap)) {
+      const btn = document.getElementById(btnId);
+      if (btn && this.mlProcessor) {
+        btn.classList.toggle('active', this.mlProcessor.activeEffects.has(effect));
+      }
+    }
+  }
+
+  async applyMLEffects() {
+    if (!this.mlProcessor || this.isProcessing) return;
+
+    if (this.mlProcessor.activeEffects.size === 0) {
+      this.updateStatus('No hay efectos ML activos');
+      return;
+    }
+
+    this.isProcessing = true;
+    const indicator = document.getElementById('processing-indicator');
+    if (indicator) indicator.classList.remove('hidden');
+
+    this.updateStatus('Procesando efectos ML...');
+
+    try {
+      const outputCanvas = await this.mlProcessor.processFrame();
+
+      if (outputCanvas && this.mlOutputCanvas) {
+        // Resize output canvas to match
+        this.mlOutputCanvas.width = outputCanvas.width;
+        this.mlOutputCanvas.height = outputCanvas.height;
+
+        const ctx = this.mlOutputCanvas.getContext('2d');
+        ctx.drawImage(outputCanvas, 0, 0);
+
+        this.mlOutputCanvas.classList.remove('hidden');
+        this.mlEnabled = true;
+
+        this.updateStatus('Efectos ML aplicados');
+        this.updateMLMemoryInfo();
+      }
+    } catch (error) {
+      console.error('Error applying ML effects:', error);
+      this.updateStatus('Error al aplicar efectos ML', true);
+    } finally {
+      this.isProcessing = false;
+      if (indicator) indicator.classList.add('hidden');
+    }
+  }
+
+  resetMLEffects() {
+    if (!this.mlProcessor) return;
+
+    // Clear all effects
+    this.mlProcessor.activeEffects.clear();
+
+    // Reset checkboxes
+    const checkboxes = [
+      'ml-denoise-toggle',
+      'ml-ssao-toggle',
+      'ml-sharpen-toggle',
+      'ml-edges-toggle',
+      'ml-color-toggle'
+    ];
+
+    checkboxes.forEach(id => {
+      const checkbox = document.getElementById(id);
+      if (checkbox) checkbox.checked = false;
+    });
+
+    // Reset toolbar buttons
+    this.syncToolbarButtons();
+
+    // Hide ML output
+    if (this.mlOutputCanvas) {
+      this.mlOutputCanvas.classList.add('hidden');
+    }
+
+    this.mlEnabled = false;
+    this.updateStatus('Efectos ML reiniciados');
+  }
+
+  updateMLMemoryInfo() {
+    if (!this.mlProcessor) return;
+
+    const memInfo = this.mlProcessor.getMemoryInfo();
+    const memoryEl = document.getElementById('ml-memory');
+
+    if (memoryEl && memInfo) {
+      const mbUsed = (memInfo.numBytes / (1024 * 1024)).toFixed(1);
+      memoryEl.textContent = `Memory: ${mbUsed} MB (${memInfo.numTensors} tensors)`;
     }
   }
 

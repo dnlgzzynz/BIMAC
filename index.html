@@ -46,6 +46,29 @@
         <span class="icon">✂️</span>
         Seccionar
       </button>
+      <div class="separator"></div>
+      <div class="toolbar-group">
+        <span class="toolbar-label">ML Effects</span>
+        <button id="btn-ml-denoise" class="btn btn-ml" title="Reducción de ruido ML">
+          <span class="icon">🔇</span>
+          Denoise
+        </button>
+        <button id="btn-ml-ssao" class="btn btn-ml" title="Ambient Occlusion ML">
+          <span class="icon">🌑</span>
+          SSAO
+        </button>
+        <button id="btn-ml-sharpen" class="btn btn-ml" title="Nitidez ML">
+          <span class="icon">💎</span>
+          Sharpen
+        </button>
+        <button id="btn-ml-edges" class="btn btn-ml" title="Realce de bordes ML">
+          <span class="icon">📊</span>
+          Edges
+        </button>
+        <button id="btn-ml-settings" class="btn btn-ml" title="Configurar efectos ML">
+          <span class="icon">⚙️</span>
+        </button>
+      </div>
     </div>
 
     <!-- Main content -->
@@ -76,6 +99,110 @@
         </div>
       </aside>
     </main>
+
+    <!-- ML Settings Panel -->
+    <aside id="ml-panel" class="ml-panel hidden">
+      <div class="panel-header">
+        <h3>ML Effects Settings</h3>
+        <button id="btn-close-ml" class="btn-close">&times;</button>
+      </div>
+      <div class="panel-content">
+        <div class="ml-status">
+          <span id="ml-backend">Backend: Initializing...</span>
+          <span id="ml-memory">Memory: --</span>
+        </div>
+
+        <div class="effect-group">
+          <div class="effect-header">
+            <label class="toggle-label">
+              <input type="checkbox" id="ml-denoise-toggle" class="effect-toggle">
+              <span>Denoise</span>
+            </label>
+          </div>
+          <div class="effect-controls">
+            <label>Strength</label>
+            <input type="range" id="ml-denoise-strength" min="0" max="100" value="50">
+            <span class="range-value">50%</span>
+          </div>
+        </div>
+
+        <div class="effect-group">
+          <div class="effect-header">
+            <label class="toggle-label">
+              <input type="checkbox" id="ml-ssao-toggle" class="effect-toggle">
+              <span>Ambient Occlusion (SSAO)</span>
+            </label>
+          </div>
+          <div class="effect-controls">
+            <label>Radius</label>
+            <input type="range" id="ml-ssao-radius" min="4" max="32" value="16">
+            <span class="range-value">16</span>
+          </div>
+          <div class="effect-controls">
+            <label>Intensity</label>
+            <input type="range" id="ml-ssao-intensity" min="0" max="200" value="100">
+            <span class="range-value">1.0</span>
+          </div>
+        </div>
+
+        <div class="effect-group">
+          <div class="effect-header">
+            <label class="toggle-label">
+              <input type="checkbox" id="ml-sharpen-toggle" class="effect-toggle">
+              <span>Sharpen</span>
+            </label>
+          </div>
+          <div class="effect-controls">
+            <label>Amount</label>
+            <input type="range" id="ml-sharpen-amount" min="0" max="100" value="30">
+            <span class="range-value">30%</span>
+          </div>
+        </div>
+
+        <div class="effect-group">
+          <div class="effect-header">
+            <label class="toggle-label">
+              <input type="checkbox" id="ml-edges-toggle" class="effect-toggle">
+              <span>Edge Enhancement</span>
+            </label>
+          </div>
+          <div class="effect-controls">
+            <label>Strength</label>
+            <input type="range" id="ml-edges-strength" min="0" max="100" value="50">
+            <span class="range-value">50%</span>
+          </div>
+        </div>
+
+        <div class="effect-group">
+          <div class="effect-header">
+            <label class="toggle-label">
+              <input type="checkbox" id="ml-color-toggle" class="effect-toggle">
+              <span>Color Grading</span>
+            </label>
+          </div>
+          <div class="effect-controls">
+            <label>Exposure</label>
+            <input type="range" id="ml-color-exposure" min="50" max="200" value="100">
+            <span class="range-value">1.0</span>
+          </div>
+          <div class="effect-controls">
+            <label>Contrast</label>
+            <input type="range" id="ml-color-contrast" min="50" max="200" value="100">
+            <span class="range-value">1.0</span>
+          </div>
+          <div class="effect-controls">
+            <label>Saturation</label>
+            <input type="range" id="ml-color-saturation" min="0" max="200" value="100">
+            <span class="range-value">1.0</span>
+          </div>
+        </div>
+
+        <div class="effect-actions">
+          <button id="btn-ml-apply" class="btn btn-primary">Apply Effects</button>
+          <button id="btn-ml-reset" class="btn">Reset All</button>
+        </div>
+      </div>
+    </aside>
 
     <!-- Model tree panel -->
     <aside id="tree-panel" class="tree-panel hidden">
