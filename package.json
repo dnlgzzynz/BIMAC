@@ -1,0 +1,31 @@
+{
+  "name": "bimac-ifc-viewer",
+  "version": "1.0.0",
+  "description": "Visor 3D para modelos IFC usando Three.js y That Open Company components",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@thatopen/components": "^2.4.0",
+    "@thatopen/components-front": "^2.4.0",
+    "@thatopen/fragments": "^2.4.0",
+    "three": "^0.160.0",
+    "web-ifc": "^0.0.57"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  },
+  "keywords": [
+    "ifc",
+    "bim",
+    "3d",
+    "viewer",
+    "threejs",
+    "architecture"
+  ],
+  "author": "",
+  "license": "MIT"
+}

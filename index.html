@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BIMAC - Visor IFC 3D</title>
+  <link rel="stylesheet" href="/src/styles/main.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <h1>BIMAC</h1>
+      <span class="subtitle">Visor IFC 3D</span>
+    </header>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <button id="btn-load" class="btn btn-primary">
+        <span class="icon">📂</span>
+        Cargar IFC
+      </button>
+      <button id="btn-fit" class="btn" title="Ajustar vista">
+        <span class="icon">🎯</span>
+        Ajustar
+      </button>
+      <button id="btn-ortho" class="btn" title="Vista ortográfica">
+        <span class="icon">📐</span>
+        Ortho
+      </button>
+      <div class="separator"></div>
+      <button id="btn-wireframe" class="btn" title="Modo wireframe">
+        <span class="icon">🔲</span>
+        Wireframe
+      </button>
+      <button id="btn-transparent" class="btn" title="Modo transparente">
+        <span class="icon">👁️</span>
+        Transparente
+      </button>
+      <div class="separator"></div>
+      <button id="btn-measure" class="btn" title="Medir distancia">
+        <span class="icon">📏</span>
+        Medir
+      </button>
+      <button id="btn-section" class="btn" title="Plano de corte">
+        <span class="icon">✂️</span>
+        Seccionar
+      </button>
+    </div>
+
+    <!-- Main content -->
+    <main class="main-content">
+      <!-- 3D Viewer -->
+      <div id="viewer-container" class="viewer-container">
+        <div id="loading-overlay" class="loading-overlay hidden">
+          <div class="loading-spinner"></div>
+          <p id="loading-text">Cargando modelo...</p>
+        </div>
+        <div id="drop-zone" class="drop-zone">
+          <div class="drop-zone-content">
+            <span class="drop-icon">📁</span>
+            <p>Arrastra un archivo IFC aquí</p>
+            <p class="drop-hint">o usa el botón "Cargar IFC"</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Properties Panel -->
+      <aside id="properties-panel" class="properties-panel hidden">
+        <div class="panel-header">
+          <h3>Propiedades</h3>
+          <button id="btn-close-panel" class="btn-close">&times;</button>
+        </div>
+        <div id="properties-content" class="panel-content">
+          <p class="placeholder">Selecciona un elemento para ver sus propiedades</p>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Model tree panel -->
+    <aside id="tree-panel" class="tree-panel hidden">
+      <div class="panel-header">
+        <h3>Estructura del modelo</h3>
+        <button id="btn-close-tree" class="btn-close">&times;</button>
+      </div>
+      <div id="tree-content" class="panel-content">
+        <!-- Tree will be populated dynamically -->
+      </div>
+    </aside>
+
+    <!-- Status bar -->
+    <footer class="status-bar">
+      <span id="status-text">Listo - Carga un modelo IFC para comenzar</span>
+      <span id="model-info"></span>
+    </footer>
+
+    <!-- Hidden file input -->
+    <input type="file" id="file-input" accept=".ifc" hidden>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
