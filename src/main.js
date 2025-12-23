@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import * as OBC from '@thatopen/components';
 import * as OBCF from '@thatopen/components-front';
 import { MLPostProcessor } from './ml/MLPostProcessor.js';
+import { IFCTreeNavigator } from './components/IFCTreeNavigator.js';
 
 // Initialize the IFC Viewer Application
 class IFCViewerApp {
@@ -23,6 +24,10 @@ class IFCViewerApp {
     this.mlOutputCanvas = null;
     this.isProcessing = false;
 
+    // Tree Navigator
+    this.treeNavigator = null;
+    this.isTreeVisible = false;
+
     this.init();
   }
 
@@ -31,11 +36,113 @@ class IFCViewerApp {
       await this.setupScene();
       this.setupEventListeners();
       await this.setupMLProcessor();
+      this.setupTreeNavigator();
       this.updateStatus('Listo - Carga un modelo IFC para comenzar');
     } catch (error) {
       console.error('Error initializing viewer:', error);
       this.updateStatus('Error al inicializar el visor', true);
     }
+  }
+
+  setupTreeNavigator() {
+    this.treeNavigator = new IFCTreeNavigator(this.components, this.fragmentsManager);
+    this.treeNavigator.init('tree-content');
+
+    // Handle element selection from tree
+    this.treeNavigator.onSelect((element) => {
+      this.onTreeElementSelected(element);
+    });
+
+    // Tree toggle button
+    const btnTree = document.getElementById('btn-tree');
+    const treePanel = document.getElementById('tree-panel');
+    const btnCloseTree = document.getElementById('btn-close-tree');
+
+    if (btnTree && treePanel) {
+      btnTree.addEventListener('click', () => {
+        this.toggleTreePanel();
+      });
+    }
+
+    if (btnCloseTree && treePanel) {
+      btnCloseTree.addEventListener('click', () => {
+        this.hideTreePanel();
+      });
+    }
+  }
+
+  toggleTreePanel() {
+    const treePanel = document.getElementById('tree-panel');
+    const btnTree = document.getElementById('btn-tree');
+
+    this.isTreeVisible = !this.isTreeVisible;
+
+    if (treePanel) {
+      treePanel.classList.toggle('hidden', !this.isTreeVisible);
+    }
+
+    if (btnTree) {
+      btnTree.classList.toggle('active', this.isTreeVisible);
+    }
+  }
+
+  hideTreePanel() {
+    const treePanel = document.getElementById('tree-panel');
+    const btnTree = document.getElementById('btn-tree');
+
+    this.isTreeVisible = false;
+
+    if (treePanel) {
+      treePanel.classList.add('hidden');
+    }
+
+    if (btnTree) {
+      btnTree.classList.remove('active');
+    }
+  }
+
+  async onTreeElementSelected(element) {
+    if (!element || !element.expressId) return;
+
+    try {
+      // Highlight element in 3D view
+      if (this.highlighter && element.fragmentId) {
+        const fragmentIdMap = new Map();
+        fragmentIdMap.set(element.fragmentId, new Set([element.expressId]));
+
+        await this.highlighter.highlightByID('select', fragmentIdMap, true, true);
+      }
+
+      // Show properties
+      this.showElementProperties(element);
+
+      this.updateStatus(`Seleccionado: ${element.name}`);
+    } catch (error) {
+      console.error('Error selecting element from tree:', error);
+    }
+  }
+
+  showElementProperties(element) {
+    const panel = document.getElementById('properties-panel');
+    const content = document.getElementById('properties-content');
+
+    if (!panel || !content) return;
+
+    let html = '<div class="property-group">';
+    html += `<div class="property-group-header">${element.type.replace('IFC', '')}</div>`;
+    html += '<table class="properties-table">';
+    html += `<tr><th>Nombre</th><td>${element.name}</td></tr>`;
+    html += `<tr><th>Tipo</th><td>${element.type}</td></tr>`;
+    html += `<tr><th>Express ID</th><td>${element.expressId}</td></tr>`;
+
+    if (element.fragmentId) {
+      html += `<tr><th>Fragment ID</th><td>${element.fragmentId.substring(0, 8)}...</td></tr>`;
+    }
+
+    html += '</table></div>';
+
+    content.innerHTML = html;
+    panel.classList.remove('hidden');
   }
 
   async setupMLProcessor() {
@@ -529,16 +636,32 @@ class IFCViewerApp {
       // Fit camera to model
       await this.fitToView();
 
+      // Build tree navigator
+      loadingText.textContent = 'Construyendo árbol de navegación...';
+      if (this.treeNavigator) {
+        await this.treeNavigator.buildTree(this.model);
+      }
+
       // Update UI
       loadingOverlay.classList.add('hidden');
       this.updateStatus(`Modelo cargado: ${file.name}`);
       this.updateModelInfo();
+
+      // Auto-show tree panel
+      if (!this.isTreeVisible) {
+        this.toggleTreePanel();
+      }
 
     } catch (error) {
       console.error('Error loading IFC:', error);
       loadingOverlay.classList.add('hidden');
       dropZone.classList.remove('hidden');
       this.updateStatus('Error al cargar el modelo IFC', true);
+
+      // Clear tree on error
+      if (this.treeNavigator) {
+        this.treeNavigator.clear();
+      }
     }
   }
 
@@ -638,11 +761,14 @@ class IFCViewerApp {
 
     // Get properties for selected elements
     try {
-      const indexer = this.components.get(OBC.IfcRelationsIndexer);
       let propertiesHtml = '';
+      let firstExpressId = null;
 
       for (const [fragmentId, expressIds] of fragmentIdMap) {
         for (const expressId of expressIds) {
+          // Store first expressId for tree sync
+          if (!firstExpressId) firstExpressId = expressId;
+
           const fragment = this.fragmentsManager.list.get(fragmentId);
           if (fragment?.group) {
             const properties = fragment.group.getLocalProperties()?.[expressId];
@@ -660,6 +786,11 @@ class IFCViewerApp {
       }
 
       panel.classList.remove('hidden');
+
+      // Sync with tree navigator
+      if (firstExpressId && this.treeNavigator && this.isTreeVisible) {
+        this.treeNavigator.highlightElement(firstExpressId);
+      }
     } catch (error) {
       console.error('Error getting properties:', error);
       content.innerHTML = '<p class="placeholder">Error al obtener propiedades</p>';
