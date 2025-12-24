@@ -4,7 +4,6 @@ import {
   FileBox,
   Tag,
   FolderOpen,
-  Layers,
   Download,
   Copy,
   Check,
@@ -14,6 +13,17 @@ import {
   User
 } from 'lucide-react'
 import FavoriteButton from './FavoriteButton'
+import { LODBadge } from './LODBadge'
+
+// LOD descriptions for modal
+const lodDescriptions = {
+  100: { name: 'Conceptual', description: 'Representación simbólica o genérica del elemento.' },
+  200: { name: 'Esquemático', description: 'Elemento con geometría aproximada, tamaño y ubicación general.' },
+  300: { name: 'Diseño', description: 'Elemento definido con geometría precisa, apto para coordinación.' },
+  350: { name: 'Construcción', description: 'Incluye interfaces y soportes para coordinación detallada.' },
+  400: { name: 'Fabricación', description: 'Detalle completo para fabricación y montaje.' },
+  500: { name: 'As-Built', description: 'Verificado en campo, representa lo construido exactamente.' }
+}
 
 const categoryColors = {
   'Arquitectura': 'category-arquitectura',
@@ -167,11 +177,18 @@ function FamilyModal({ family, onClose, isFavorite, onToggleFavorite }) {
                 </div>
 
                 {family.lod && (
-                  <div className="flex items-center gap-3">
-                    <Layers size={18} className="text-gray-400" />
-                    <div>
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5">
+                      <LODBadge lod={family.lod} size="md" showTooltip={false} />
+                    </div>
+                    <div className="flex-1">
                       <span className="text-sm text-gray-500">Level of Development</span>
-                      <p className="font-semibold">LOD {family.lod}</p>
+                      <p className="font-semibold text-gray-800">
+                        {lodDescriptions[family.lod]?.name || 'Personalizado'}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        {lodDescriptions[family.lod]?.description || 'Nivel de desarrollo personalizado.'}
+                      </p>
                     </div>
                   </div>
                 )}

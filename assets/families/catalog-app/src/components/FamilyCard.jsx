@@ -1,6 +1,7 @@
 import React from 'react'
 import { FileBox, Tag, FolderOpen } from 'lucide-react'
 import FavoriteButton from './FavoriteButton'
+import { LODBadge } from './LODBadge'
 
 const categoryColors = {
   'Arquitectura': 'category-arquitectura',
@@ -87,11 +88,9 @@ function FamilyCard({ family, onClick, isFavorite, onToggleFavorite }) {
 
       {/* Footer */}
       <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
-        <span className="text-gray-500">{family.file}</span>
+        <span className="text-gray-500 truncate max-w-[60%]">{family.file}</span>
         {family.lod && (
-          <span className="bg-bimac-light text-bimac-primary px-2 py-0.5 rounded font-medium">
-            LOD {family.lod}
-          </span>
+          <LODBadge lod={family.lod} size="xs" />
         )}
       </div>
     </div>

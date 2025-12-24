@@ -1,6 +1,7 @@
 import React from 'react'
 import { FileBox, Tag } from 'lucide-react'
 import FavoriteButton from './FavoriteButton'
+import { LODBadgeSimple } from './LODBadge'
 
 const categoryColors = {
   'Arquitectura': 'category-arquitectura',
@@ -104,9 +105,7 @@ function FamilyTable({ families, onFamilyClick, isFavorite, onToggleFavorite }) 
                   </td>
                   <td className="px-4 py-3 hidden lg:table-cell">
                     {family.lod && (
-                      <span className="bg-bimac-light text-bimac-primary px-2 py-0.5 rounded text-xs font-medium">
-                        {family.lod}
-                      </span>
+                      <LODBadgeSimple lod={family.lod} size="sm" />
                     )}
                   </td>
                 </tr>

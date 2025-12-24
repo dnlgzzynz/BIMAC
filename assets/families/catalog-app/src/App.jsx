@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react'
-import { Search, Grid, List, Filter, Download, ExternalLink, Star } from 'lucide-react'
+import { Search, Grid, List, Filter, Download, ExternalLink, Star, Info } from 'lucide-react'
 import FamilyCard from './components/FamilyCard'
 import FamilyTable from './components/FamilyTable'
 import FamilyModal from './components/FamilyModal'
 import SearchBar from './components/SearchBar'
 import FilterPanel from './components/FilterPanel'
+import { LODLegend } from './components/LODBadge'
 import { useFavorites } from './hooks/useFavorites'
 import familiesData from './data/families.json'
 
@@ -16,6 +17,7 @@ function App() {
   const [showFilters, setShowFilters] = useState(false)
   const [selectedFamily, setSelectedFamily] = useState(null)
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
+  const [showLODLegend, setShowLODLegend] = useState(false)
 
   // Favorites hook
   const { favorites, toggleFavorite, isFavorite, count: favoritesCount } = useFavorites()
@@ -78,9 +80,17 @@ function App() {
       <header className="bg-bimac-primary text-white py-6 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold">Catálogo de Familias Revit</h1>
-              <p className="text-bimac-light mt-1">BIMAC Studio - Biblioteca BIM</p>
+            <div className="flex items-center gap-4">
+              {/* Logo */}
+              <img
+                src="/images/bimac-logo.svg"
+                alt="BIMAC Logo"
+                className="w-12 h-12 md:w-14 md:h-14"
+              />
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold">Catálogo de Familias Revit</h1>
+                <p className="text-bimac-light mt-1">BIMAC Studio - Biblioteca BIM</p>
+              </div>
             </div>
             <div className="hidden md:flex items-center gap-4 text-sm">
               <span className="bg-bimac-secondary px-3 py-1 rounded-full">
@@ -140,8 +150,23 @@ function App() {
             >
               <Download size={18} />
             </button>
+            <button
+              onClick={() => setShowLODLegend(!showLODLegend)}
+              className={`filter-button flex items-center gap-2 ${showLODLegend ? 'active' : ''}`}
+              title="Leyenda LOD"
+            >
+              <Info size={18} />
+              <span className="hidden sm:inline">LOD</span>
+            </button>
           </div>
         </div>
+
+        {/* LOD Legend */}
+        {showLODLegend && (
+          <div className="mb-6">
+            <LODLegend />
+          </div>
+        )}
 
         {/* Filters */}
         {showFilters && (
@@ -229,18 +254,27 @@ function App() {
 
       {/* Footer */}
       <footer className="bg-bimac-dark text-gray-400 py-6 px-4 mt-12">
-        <div className="max-w-7xl mx-auto text-center">
-          <p>
-            <a href="https://bimacstudio.com" className="text-white hover:text-bimac-accent" target="_blank" rel="noopener noreferrer">
-              BIMAC Studio
-            </a>
-            {' '}&copy; {new Date().getFullYear()} - Catálogo de Familias Revit
-          </p>
-          <p className="text-sm mt-2">
-            <a href="mailto:arq.dnlgzz@bimacstudio.com" className="hover:text-white">
-              arq.dnlgzz@bimacstudio.com
-            </a>
-          </p>
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+            <img
+              src="/images/bimac-logo.svg"
+              alt="BIMAC Logo"
+              className="w-10 h-10 opacity-80"
+            />
+            <div className="text-center">
+              <p>
+                <a href="https://bimacstudio.com" className="text-white hover:text-bimac-accent" target="_blank" rel="noopener noreferrer">
+                  BIMAC Studio
+                </a>
+                {' '}&copy; {new Date().getFullYear()} - Catálogo de Familias Revit
+              </p>
+              <p className="text-sm mt-1">
+                <a href="mailto:arq.dnlgzz@bimacstudio.com" className="hover:text-white">
+                  arq.dnlgzz@bimacstudio.com
+                </a>
+              </p>
+            </div>
+          </div>
         </div>
       </footer>
 
