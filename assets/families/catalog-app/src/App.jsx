@@ -5,10 +5,12 @@ import FamilyTable from './components/FamilyTable'
 import FamilyModal from './components/FamilyModal'
 import ExportModal from './components/ExportModal'
 import StatsPanel from './components/StatsPanel'
+import ThemeToggle from './components/ThemeToggle'
 import SearchBar from './components/SearchBar'
 import FilterPanel from './components/FilterPanel'
 import { LODLegend } from './components/LODBadge'
 import { useFavorites } from './hooks/useFavorites'
+import { useTheme } from './hooks/useTheme'
 import familiesData from './data/families.json'
 
 function App() {
@@ -25,6 +27,9 @@ function App() {
 
   // Favorites hook
   const { favorites, toggleFavorite, isFavorite, count: favoritesCount } = useFavorites()
+
+  // Theme hook
+  const { isDark, toggleTheme } = useTheme()
 
   // Get unique categories and collections
   const categories = useMemo(() => {
@@ -62,9 +67,9 @@ function App() {
   }), [filteredFamilies, categories, collections])
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
       {/* Header */}
-      <header className="bg-bimac-primary text-white py-6 px-4">
+      <header className={`py-6 px-4 transition-colors duration-300 ${isDark ? 'bg-gray-800' : 'bg-bimac-primary'} text-white`}>
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -76,22 +81,27 @@ function App() {
               />
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold">Catálogo de Familias Revit</h1>
-                <p className="text-bimac-light mt-1">BIMAC Studio - Biblioteca BIM</p>
+                <p className={`mt-1 ${isDark ? 'text-gray-400' : 'text-bimac-light'}`}>BIMAC Studio - Biblioteca BIM</p>
               </div>
             </div>
-            <div className="hidden md:flex items-center gap-4 text-sm">
-              <span className="bg-bimac-secondary px-3 py-1 rounded-full">
-                {stats.total} familias
-              </span>
-              <span className="bg-bimac-secondary px-3 py-1 rounded-full">
-                {stats.categories} categorías
-              </span>
-              {favoritesCount > 0 && (
-                <span className="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full flex items-center gap-1">
-                  <Star size={14} fill="currentColor" />
-                  {favoritesCount} favoritos
+            <div className="flex items-center gap-4">
+              {/* Theme Toggle */}
+              <ThemeToggle isDark={isDark} onToggle={toggleTheme} size="sm" />
+              {/* Stats badges - hidden on mobile */}
+              <div className="hidden md:flex items-center gap-4 text-sm">
+                <span className={`px-3 py-1 rounded-full ${isDark ? 'bg-gray-700' : 'bg-bimac-secondary'}`}>
+                  {stats.total} familias
                 </span>
-              )}
+                <span className={`px-3 py-1 rounded-full ${isDark ? 'bg-gray-700' : 'bg-bimac-secondary'}`}>
+                  {stats.categories} categorías
+                </span>
+                {favoritesCount > 0 && (
+                  <span className="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full flex items-center gap-1">
+                    <Star size={14} fill="currentColor" />
+                    {favoritesCount} favoritos
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -258,7 +268,7 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-bimac-dark text-gray-400 py-6 px-4 mt-12">
+      <footer className={`py-6 px-4 mt-12 transition-colors duration-300 ${isDark ? 'bg-gray-950' : 'bg-bimac-dark'} text-gray-400`}>
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-center gap-4">
             <img
@@ -268,13 +278,13 @@ function App() {
             />
             <div className="text-center">
               <p>
-                <a href="https://bimacstudio.com" className="text-white hover:text-bimac-accent" target="_blank" rel="noopener noreferrer">
+                <a href="https://bimacstudio.com" className={`hover:text-bimac-accent ${isDark ? 'text-gray-200' : 'text-white'}`} target="_blank" rel="noopener noreferrer">
                   BIMAC Studio
                 </a>
                 {' '}&copy; {new Date().getFullYear()} - Catálogo de Familias Revit
               </p>
               <p className="text-sm mt-1">
-                <a href="mailto:arq.dnlgzz@bimacstudio.com" className="hover:text-white">
+                <a href="mailto:arq.dnlgzz@bimacstudio.com" className={`hover:${isDark ? 'text-gray-200' : 'text-white'}`}>
                   arq.dnlgzz@bimacstudio.com
                 </a>
               </p>

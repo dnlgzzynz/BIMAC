@@ -7,8 +7,9 @@
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
+/* ===== LIGHT MODE (default) ===== */
 .family-card {
-  @apply bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200;
+  @apply bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200;
 }
 
 .family-card:hover {
@@ -28,6 +29,7 @@
 
 .search-input {
   @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bimac-accent focus:border-transparent;
+  @apply bg-white text-gray-900;
 }
 
 .filter-button {
@@ -40,4 +42,96 @@
 
 .filter-button:not(.active) {
   @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
+}
+
+/* ===== DARK MODE ===== */
+.dark .family-card {
+  @apply bg-gray-800 shadow-gray-900/50;
+}
+
+.dark .family-card:hover {
+  @apply shadow-gray-900/70;
+}
+
+/* Category badges - dark mode */
+.dark .category-arquitectura { @apply bg-blue-900/50 text-blue-300; }
+.dark .category-estructura { @apply bg-gray-700 text-gray-300; }
+.dark .category-mep { @apply bg-green-900/50 text-green-300; }
+.dark .category-mobiliario { @apply bg-yellow-900/50 text-yellow-300; }
+.dark .category-anotacion { @apply bg-purple-900/50 text-purple-300; }
+.dark .category-muros-cortina { @apply bg-cyan-900/50 text-cyan-300; }
+
+.dark .search-input {
+  @apply bg-gray-800 border-gray-600 text-gray-100 placeholder-gray-400;
+  @apply focus:ring-bimac-secondary focus:border-bimac-secondary;
+}
+
+.dark .filter-button.active {
+  @apply bg-bimac-secondary text-gray-900;
+}
+
+.dark .filter-button:not(.active) {
+  @apply bg-gray-700 text-gray-200 hover:bg-gray-600;
+}
+
+/* Additional dark mode overrides */
+.dark .bg-white {
+  @apply bg-gray-800;
+}
+
+.dark .bg-gray-50 {
+  @apply bg-gray-900;
+}
+
+.dark .bg-gray-100 {
+  @apply bg-gray-700;
+}
+
+.dark .text-gray-900 {
+  @apply text-gray-100;
+}
+
+.dark .text-gray-800 {
+  @apply text-gray-200;
+}
+
+.dark .text-gray-700 {
+  @apply text-gray-300;
+}
+
+.dark .text-gray-600 {
+  @apply text-gray-400;
+}
+
+.dark .text-gray-500 {
+  @apply text-gray-400;
+}
+
+.dark .border-gray-200 {
+  @apply border-gray-700;
+}
+
+.dark .border-gray-100 {
+  @apply border-gray-700;
+}
+
+.dark .shadow {
+  @apply shadow-gray-900/50;
+}
+
+.dark .shadow-md {
+  @apply shadow-gray-900/50;
+}
+
+.dark .shadow-lg {
+  @apply shadow-gray-900/60;
+}
+
+/* Dark mode for specific components */
+.dark .bg-bimac-light {
+  @apply bg-gray-700;
+}
+
+.dark .divide-gray-200 > * + * {
+  @apply border-gray-700;
 }
