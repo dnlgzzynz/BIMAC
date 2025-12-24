@@ -3,6 +3,7 @@ import { Search, Grid, List, Filter, Download, ExternalLink, Star, Info } from '
 import FamilyCard from './components/FamilyCard'
 import FamilyTable from './components/FamilyTable'
 import FamilyModal from './components/FamilyModal'
+import ExportModal from './components/ExportModal'
 import SearchBar from './components/SearchBar'
 import FilterPanel from './components/FilterPanel'
 import { LODLegend } from './components/LODBadge'
@@ -18,6 +19,7 @@ function App() {
   const [selectedFamily, setSelectedFamily] = useState(null)
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
   const [showLODLegend, setShowLODLegend] = useState(false)
+  const [showExportModal, setShowExportModal] = useState(false)
 
   // Favorites hook
   const { favorites, toggleFavorite, isFavorite, count: favoritesCount } = useFavorites()
@@ -56,23 +58,6 @@ function App() {
     categories: categories.length - 1,
     collections: collections.length - 1
   }), [filteredFamilies, categories, collections])
-
-  // Export filtered list
-  const handleExport = () => {
-    const csv = [
-      ['Nombre', 'Categoría', 'Colección', 'Descripción', 'Tags'].join(','),
-      ...filteredFamilies.map(f =>
-        [f.name, f.category, f.collection, `"${f.description}"`, `"${f.tags.join(', ')}"`].join(',')
-      )
-    ].join('\n')
-
-    const blob = new Blob([csv], { type: 'text/csv' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'bimac-familias.csv'
-    a.click()
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -144,11 +129,12 @@ function App() {
               <List size={18} />
             </button>
             <button
-              onClick={handleExport}
+              onClick={() => setShowExportModal(true)}
               className="filter-button flex items-center gap-2"
               title="Exportar lista"
             >
               <Download size={18} />
+              <span className="hidden sm:inline">Exportar</span>
             </button>
             <button
               onClick={() => setShowLODLegend(!showLODLegend)}
@@ -287,6 +273,15 @@ function App() {
           onToggleFavorite={toggleFavorite}
         />
       )}
+
+      {/* Export Modal */}
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        families={filteredFamilies}
+        favoritesCount={favoritesCount}
+        totalCount={stats.total}
+      />
     </div>
   )
 }
