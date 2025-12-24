@@ -11,7 +11,7 @@ const categoryColors = {
   'Membretes': 'category-anotacion',
 }
 
-function FamilyTable({ families }) {
+function FamilyTable({ families, onFamilyClick }) {
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
       <div className="overflow-x-auto">
@@ -40,7 +40,11 @@ function FamilyTable({ families }) {
               const categoryClass = categoryColors[family.category] || 'bg-gray-100 text-gray-800'
 
               return (
-                <tr key={family.id} className="hover:bg-gray-50">
+                <tr
+                  key={family.id}
+                  className="hover:bg-gray-50 cursor-pointer"
+                  onClick={() => onFamilyClick(family)}
+                >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-10 h-10 bg-gray-100 rounded flex items-center justify-center">

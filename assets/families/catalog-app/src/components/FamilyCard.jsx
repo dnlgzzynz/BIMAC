@@ -11,11 +11,17 @@ const categoryColors = {
   'Membretes': 'category-anotacion',
 }
 
-function FamilyCard({ family }) {
+function FamilyCard({ family, onClick }) {
   const categoryClass = categoryColors[family.category] || 'bg-gray-100 text-gray-800'
 
   return (
-    <div className="family-card p-4 flex flex-col h-full">
+    <div
+      className="family-card p-4 flex flex-col h-full cursor-pointer"
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === 'Enter' && onClick()}
+    >
       {/* Thumbnail */}
       <div className="bg-gray-100 rounded-lg h-32 flex items-center justify-center mb-3 overflow-hidden">
         {family.thumbnail ? (

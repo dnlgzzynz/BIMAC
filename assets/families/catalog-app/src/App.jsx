@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react'
 import { Search, Grid, List, Filter, Download, ExternalLink } from 'lucide-react'
 import FamilyCard from './components/FamilyCard'
 import FamilyTable from './components/FamilyTable'
+import FamilyModal from './components/FamilyModal'
 import SearchBar from './components/SearchBar'
 import FilterPanel from './components/FilterPanel'
 import familiesData from './data/families.json'
@@ -12,6 +13,7 @@ function App() {
   const [selectedCollection, setSelectedCollection] = useState('all')
   const [viewMode, setViewMode] = useState('grid') // 'grid' or 'table'
   const [showFilters, setShowFilters] = useState(false)
+  const [selectedFamily, setSelectedFamily] = useState(null)
 
   // Get unique categories and collections
   const categories = useMemo(() => {
@@ -162,11 +164,18 @@ function App() {
         {viewMode === 'grid' ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {filteredFamilies.map(family => (
-              <FamilyCard key={family.id} family={family} />
+              <FamilyCard
+                key={family.id}
+                family={family}
+                onClick={() => setSelectedFamily(family)}
+              />
             ))}
           </div>
         ) : (
-          <FamilyTable families={filteredFamilies} />
+          <FamilyTable
+            families={filteredFamilies}
+            onFamilyClick={setSelectedFamily}
+          />
         )}
 
         {/* No results */}
@@ -203,6 +212,14 @@ function App() {
           </p>
         </div>
       </footer>
+
+      {/* Family Detail Modal */}
+      {selectedFamily && (
+        <FamilyModal
+          family={selectedFamily}
+          onClose={() => setSelectedFamily(null)}
+        />
+      )}
     </div>
   )
 }

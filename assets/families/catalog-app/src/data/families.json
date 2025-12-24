@@ -2,13 +2,24 @@
   {
     "id": "1",
     "name": "BIMAC_Puerta_Abatible_Sencilla",
-    "description": "Puerta abatible sencilla con marco de madera, incluye variantes de 70, 80, 90 y 100 cm",
+    "description": "Puerta abatible sencilla con marco de madera, incluye variantes de 70, 80, 90 y 100 cm. Familia paramétrica con control de dimensiones, materiales y herrajes.",
     "category": "Arquitectura",
     "collection": "Coleccion",
     "file": "BIMAC_Puerta_Abatible_Sencilla.rfa",
     "thumbnail": null,
     "tags": ["puerta", "abatible", "madera", "interior"],
-    "lod": 300
+    "lod": 300,
+    "revitVersion": "2024",
+    "author": "BIMAC Studio",
+    "dateAdded": "2024-06-15",
+    "parameters": [
+      { "name": "Ancho", "type": "Longitud" },
+      { "name": "Alto", "type": "Longitud" },
+      { "name": "Espesor_Marco", "type": "Longitud" },
+      { "name": "Material_Hoja", "type": "Material" },
+      { "name": "Material_Marco", "type": "Material" },
+      { "name": "Resistencia_Fuego", "type": "Texto" }
+    ]
   },
   {
     "id": "2",
@@ -123,13 +134,25 @@
   {
     "id": "12",
     "name": "Lavabo_Sobreponer",
-    "description": "Lavabo de sobreponer cerámico blanco",
+    "description": "Lavabo de sobreponer cerámico blanco con conexiones hidráulicas modeladas. Incluye información de fabricante y especificaciones técnicas.",
     "category": "MEP",
     "collection": "Megapack 2",
     "file": "Lavabo_Sobreponer.rfa",
     "thumbnail": null,
     "tags": ["lavabo", "baño", "ceramica", "plomeria"],
-    "lod": 300
+    "lod": 300,
+    "revitVersion": "2023",
+    "author": "BIMAC Studio",
+    "dateAdded": "2023-11-20",
+    "parameters": [
+      { "name": "Ancho", "type": "Longitud" },
+      { "name": "Profundidad", "type": "Longitud" },
+      { "name": "Alto", "type": "Longitud" },
+      { "name": "Diametro_Desague", "type": "Longitud" },
+      { "name": "Fabricante", "type": "Texto" },
+      { "name": "Modelo", "type": "Texto" },
+      { "name": "Costo", "type": "Moneda" }
+    ]
   },
   {
     "id": "13",
@@ -178,13 +201,25 @@
   {
     "id": "17",
     "name": "BIMAC_Membrete_A1_Horizontal",
-    "description": "Membrete tamaño A1 horizontal con logo BIMAC Studio",
+    "description": "Membrete tamaño A1 (841x594mm) horizontal con logo BIMAC Studio. Incluye campos automáticos para proyecto, fecha, escala, revisión y firmas.",
     "category": "Membretes",
     "collection": "Membretes",
     "file": "BIMAC_Membrete_A1_Horizontal.rfa",
     "thumbnail": null,
     "tags": ["membrete", "titleblock", "A1", "plano"],
-    "lod": null
+    "lod": null,
+    "revitVersion": "2024",
+    "author": "BIMAC Studio",
+    "dateAdded": "2024-01-10",
+    "parameters": [
+      { "name": "Nombre_Proyecto", "type": "Texto" },
+      { "name": "Numero_Proyecto", "type": "Texto" },
+      { "name": "Cliente", "type": "Texto" },
+      { "name": "Fecha_Emision", "type": "Texto" },
+      { "name": "Revision", "type": "Texto" },
+      { "name": "Dibujado_Por", "type": "Texto" },
+      { "name": "Revisado_Por", "type": "Texto" }
+    ]
   },
   {
     "id": "18",
