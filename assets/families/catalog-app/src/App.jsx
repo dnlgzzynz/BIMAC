@@ -1,9 +1,10 @@
 import React, { useState, useMemo } from 'react'
-import { Search, Grid, List, Filter, Download, ExternalLink, Star, Info } from 'lucide-react'
+import { Search, Grid, List, Filter, Download, ExternalLink, Star, Info, BarChart3 } from 'lucide-react'
 import FamilyCard from './components/FamilyCard'
 import FamilyTable from './components/FamilyTable'
 import FamilyModal from './components/FamilyModal'
 import ExportModal from './components/ExportModal'
+import StatsPanel from './components/StatsPanel'
 import SearchBar from './components/SearchBar'
 import FilterPanel from './components/FilterPanel'
 import { LODLegend } from './components/LODBadge'
@@ -20,6 +21,7 @@ function App() {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
   const [showLODLegend, setShowLODLegend] = useState(false)
   const [showExportModal, setShowExportModal] = useState(false)
+  const [showStats, setShowStats] = useState(false)
 
   // Favorites hook
   const { favorites, toggleFavorite, isFavorite, count: favoritesCount } = useFavorites()
@@ -144,8 +146,25 @@ function App() {
               <Info size={18} />
               <span className="hidden sm:inline">LOD</span>
             </button>
+            <button
+              onClick={() => setShowStats(!showStats)}
+              className={`filter-button flex items-center gap-2 ${showStats ? 'active' : ''}`}
+              title="Estadísticas"
+            >
+              <BarChart3 size={18} />
+              <span className="hidden sm:inline">Stats</span>
+            </button>
           </div>
         </div>
+
+        {/* Stats Panel */}
+        {showStats && (
+          <StatsPanel
+            families={filteredFamilies}
+            allFamilies={familiesData}
+            favoritesCount={favoritesCount}
+          />
+        )}
 
         {/* LOD Legend */}
         {showLODLegend && (
