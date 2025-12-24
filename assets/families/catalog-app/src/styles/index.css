@@ -7,7 +7,7 @@
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-/* ===== LIGHT MODE (default) ===== */
+/* ===== Family Card ===== */
 .family-card {
   @apply bg-white rounded-lg shadow-md transition-all duration-200;
 }
@@ -16,6 +16,11 @@
   @apply shadow-lg transform -translate-y-1;
 }
 
+.dark .family-card {
+  @apply bg-gray-800;
+}
+
+/* ===== Category Badges ===== */
 .category-badge {
   @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
 }
@@ -27,41 +32,6 @@
 .category-anotacion { @apply bg-purple-100 text-purple-800; }
 .category-muros-cortina { @apply bg-cyan-100 text-cyan-800; }
 
-.search-input {
-  @apply w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-900;
-}
-
-.search-input:focus {
-  @apply ring-2 ring-bimac-accent border-transparent outline-none;
-}
-
-.filter-button {
-  @apply px-4 py-2 rounded-lg font-medium transition-colors duration-200;
-}
-
-.filter-button.active {
-  @apply bg-bimac-primary text-white;
-}
-
-.filter-button:not(.active) {
-  @apply bg-gray-100 text-gray-700;
-}
-
-.filter-button:not(.active):hover {
-  @apply bg-gray-200;
-}
-
-/* ===== DARK MODE ===== */
-.dark .family-card {
-  @apply bg-gray-800;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-}
-
-.dark .family-card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
-}
-
-/* Category badges - dark mode */
 .dark .category-arquitectura { @apply bg-blue-900 text-blue-300; }
 .dark .category-estructura { @apply bg-gray-700 text-gray-300; }
 .dark .category-mep { @apply bg-green-900 text-green-300; }
@@ -69,22 +39,41 @@
 .dark .category-anotacion { @apply bg-purple-900 text-purple-300; }
 .dark .category-muros-cortina { @apply bg-cyan-900 text-cyan-300; }
 
+/* ===== Search Input ===== */
+.search-input {
+  @apply w-full px-4 py-2 border border-gray-300 rounded-lg bg-white;
+}
+
+.search-input:focus {
+  @apply ring-2 ring-bimac-accent border-transparent outline-none;
+}
+
 .dark .search-input {
   @apply bg-gray-800 border-gray-600 text-gray-100;
 }
 
-.dark .search-input::placeholder {
-  @apply text-gray-400;
+/* ===== Filter Buttons ===== */
+.filter-button {
+  @apply px-4 py-2 rounded-lg font-medium transition-colors duration-200 bg-gray-100 text-gray-700;
 }
 
-.dark .filter-button.active {
-  @apply bg-bimac-secondary text-gray-900;
+.filter-button:hover {
+  @apply bg-gray-200;
 }
 
-.dark .filter-button:not(.active) {
+.filter-button.active {
+  @apply bg-bimac-primary text-white;
+}
+
+.dark .filter-button {
   @apply bg-gray-700 text-gray-200;
 }
 
-.dark .filter-button:not(.active):hover {
+.dark .filter-button:hover {
   @apply bg-gray-600;
+}
+
+.dark .filter-button.active {
+  background-color: #FF8A65;
+  color: #111827;
 }
