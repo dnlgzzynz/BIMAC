@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react'
-import { Search, Grid, List, Filter, Download, ExternalLink } from 'lucide-react'
+import { Search, Grid, List, Filter, Download, ExternalLink, Star } from 'lucide-react'
 import FamilyCard from './components/FamilyCard'
 import FamilyTable from './components/FamilyTable'
 import FamilyModal from './components/FamilyModal'
 import SearchBar from './components/SearchBar'
 import FilterPanel from './components/FilterPanel'
+import { useFavorites } from './hooks/useFavorites'
 import familiesData from './data/families.json'
 
 function App() {
@@ -14,6 +15,10 @@ function App() {
   const [viewMode, setViewMode] = useState('grid') // 'grid' or 'table'
   const [showFilters, setShowFilters] = useState(false)
   const [selectedFamily, setSelectedFamily] = useState(null)
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
+
+  // Favorites hook
+  const { favorites, toggleFavorite, isFavorite, count: favoritesCount } = useFavorites()
 
   // Get unique categories and collections
   const categories = useMemo(() => {
@@ -36,10 +41,11 @@ function App() {
 
       const matchesCategory = selectedCategory === 'all' || family.category === selectedCategory
       const matchesCollection = selectedCollection === 'all' || family.collection === selectedCollection
+      const matchesFavorites = !showFavoritesOnly || isFavorite(family.id)
 
-      return matchesSearch && matchesCategory && matchesCollection
+      return matchesSearch && matchesCategory && matchesCollection && matchesFavorites
     })
-  }, [searchTerm, selectedCategory, selectedCollection])
+  }, [searchTerm, selectedCategory, selectedCollection, showFavoritesOnly, favorites])
 
   // Stats
   const stats = useMemo(() => ({
@@ -83,6 +89,12 @@ function App() {
               <span className="bg-bimac-secondary px-3 py-1 rounded-full">
                 {stats.categories} categorías
               </span>
+              {favoritesCount > 0 && (
+                <span className="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full flex items-center gap-1">
+                  <Star size={14} fill="currentColor" />
+                  {favoritesCount} favoritos
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -140,18 +152,28 @@ function App() {
             selectedCollection={selectedCollection}
             onCategoryChange={setSelectedCategory}
             onCollectionChange={setSelectedCollection}
+            showFavoritesOnly={showFavoritesOnly}
+            onToggleFavoritesOnly={() => setShowFavoritesOnly(!showFavoritesOnly)}
+            favoritesCount={favoritesCount}
           />
         )}
 
         {/* Results count */}
         <div className="mb-4 text-gray-600">
           Mostrando <span className="font-semibold text-bimac-primary">{stats.filtered}</span> de {stats.total} familias
-          {(selectedCategory !== 'all' || selectedCollection !== 'all' || searchTerm) && (
+          {showFavoritesOnly && (
+            <span className="ml-2 inline-flex items-center gap-1 text-yellow-600">
+              <Star size={14} fill="currentColor" />
+              Solo favoritos
+            </span>
+          )}
+          {(selectedCategory !== 'all' || selectedCollection !== 'all' || searchTerm || showFavoritesOnly) && (
             <button
               onClick={() => {
                 setSearchTerm('')
                 setSelectedCategory('all')
                 setSelectedCollection('all')
+                setShowFavoritesOnly(false)
               }}
               className="ml-2 text-bimac-accent hover:underline"
             >
@@ -168,6 +190,8 @@ function App() {
                 key={family.id}
                 family={family}
                 onClick={() => setSelectedFamily(family)}
+                isFavorite={isFavorite(family.id)}
+                onToggleFavorite={toggleFavorite}
               />
             ))}
           </div>
@@ -175,18 +199,25 @@ function App() {
           <FamilyTable
             families={filteredFamilies}
             onFamilyClick={setSelectedFamily}
+            isFavorite={isFavorite}
+            onToggleFavorite={toggleFavorite}
           />
         )}
 
         {/* No results */}
         {filteredFamilies.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No se encontraron familias con los filtros seleccionados.</p>
+            <p className="text-gray-500 text-lg">
+              {showFavoritesOnly && favoritesCount === 0
+                ? 'No tienes familias en favoritos aún.'
+                : 'No se encontraron familias con los filtros seleccionados.'}
+            </p>
             <button
               onClick={() => {
                 setSearchTerm('')
                 setSelectedCategory('all')
                 setSelectedCollection('all')
+                setShowFavoritesOnly(false)
               }}
               className="mt-4 text-bimac-accent hover:underline"
             >
@@ -218,6 +249,8 @@ function App() {
         <FamilyModal
           family={selectedFamily}
           onClose={() => setSelectedFamily(null)}
+          isFavorite={isFavorite(selectedFamily.id)}
+          onToggleFavorite={toggleFavorite}
         />
       )}
     </div>

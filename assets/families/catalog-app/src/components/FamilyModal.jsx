@@ -13,6 +13,7 @@ import {
   Calendar,
   User
 } from 'lucide-react'
+import FavoriteButton from './FavoriteButton'
 
 const categoryColors = {
   'Arquitectura': 'category-arquitectura',
@@ -24,7 +25,7 @@ const categoryColors = {
   'Membretes': 'category-anotacion',
 }
 
-function FamilyModal({ family, onClose }) {
+function FamilyModal({ family, onClose, isFavorite, onToggleFavorite }) {
   const [copied, setCopied] = React.useState(false)
   const categoryClass = categoryColors[family.category] || 'bg-gray-100 text-gray-800'
 
@@ -65,10 +66,18 @@ function FamilyModal({ family, onClose }) {
       <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="bg-bimac-primary text-white px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold truncate pr-4">{family.name}</h2>
+          <div className="flex items-center gap-3 min-w-0">
+            <FavoriteButton
+              isFavorite={isFavorite}
+              onToggle={() => onToggleFavorite(family.id)}
+              size="lg"
+              className="text-white hover:text-yellow-400"
+            />
+            <h2 className="text-xl font-semibold truncate">{family.name}</h2>
+          </div>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors"
+            className="p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors flex-shrink-0"
           >
             <X size={24} />
           </button>

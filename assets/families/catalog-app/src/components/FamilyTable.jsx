@@ -1,5 +1,6 @@
 import React from 'react'
 import { FileBox, Tag } from 'lucide-react'
+import FavoriteButton from './FavoriteButton'
 
 const categoryColors = {
   'Arquitectura': 'category-arquitectura',
@@ -11,13 +12,16 @@ const categoryColors = {
   'Membretes': 'category-anotacion',
 }
 
-function FamilyTable({ families, onFamilyClick }) {
+function FamilyTable({ families, onFamilyClick, isFavorite, onToggleFavorite }) {
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
+              <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+                Fav
+              </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Familia
               </th>
@@ -45,6 +49,13 @@ function FamilyTable({ families, onFamilyClick }) {
                   className="hover:bg-gray-50 cursor-pointer"
                   onClick={() => onFamilyClick(family)}
                 >
+                  <td className="px-2 py-3 text-center" onClick={e => e.stopPropagation()}>
+                    <FavoriteButton
+                      isFavorite={isFavorite(family.id)}
+                      onToggle={() => onToggleFavorite(family.id)}
+                      size="sm"
+                    />
+                  </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div className="flex-shrink-0 w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
