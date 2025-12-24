@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for BIMAC Family Catalog */
+#bimac-family-catalog {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.family-card {
+  @apply bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200;
+}
+
+.family-card:hover {
+  @apply transform -translate-y-1;
+}
+
+.category-badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.category-arquitectura { @apply bg-blue-100 text-blue-800; }
+.category-estructura { @apply bg-gray-100 text-gray-800; }
+.category-mep { @apply bg-green-100 text-green-800; }
+.category-mobiliario { @apply bg-yellow-100 text-yellow-800; }
+.category-anotacion { @apply bg-purple-100 text-purple-800; }
+.category-muros-cortina { @apply bg-cyan-100 text-cyan-800; }
+
+.search-input {
+  @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-bimac-accent focus:border-transparent;
+}
+
+.filter-button {
+  @apply px-4 py-2 rounded-lg font-medium transition-colors duration-200;
+}
+
+.filter-button.active {
+  @apply bg-bimac-primary text-white;
+}
+
+.filter-button:not(.active) {
+  @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
+}
