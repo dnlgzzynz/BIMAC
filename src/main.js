@@ -3,6 +3,7 @@ import * as OBC from '@thatopen/components';
 import * as OBCF from '@thatopen/components-front';
 import { MLPostProcessor } from './ml/MLPostProcessor.js';
 import { IFCTreeNavigator } from './components/IFCTreeNavigator.js';
+import { NodeEditor } from './nodes/NodeEditor.js';
 
 // Initialize the IFC Viewer Application
 class IFCViewerApp {
@@ -28,6 +29,14 @@ class IFCViewerApp {
     this.treeNavigator = null;
     this.isTreeVisible = false;
 
+    // Node Editor
+    this.nodeEditor = null;
+    this.nodePreviewScene = null;
+    this.nodePreviewRenderer = null;
+    this.nodePreviewCamera = null;
+    this.isNodeEditorVisible = false;
+    this.generatedMeshes = [];
+
     this.init();
   }
 
@@ -37,11 +46,191 @@ class IFCViewerApp {
       this.setupEventListeners();
       await this.setupMLProcessor();
       this.setupTreeNavigator();
+      this.setupNodeEditor();
       this.updateStatus('Listo - Carga un modelo IFC para comenzar');
     } catch (error) {
       console.error('Error initializing viewer:', error);
       this.updateStatus('Error al inicializar el visor', true);
     }
+  }
+
+  setupNodeEditor() {
+    // Toggle button
+    const btnNodes = document.getElementById('btn-nodes');
+    const nodeWrapper = document.getElementById('node-editor-wrapper');
+    const btnCloseNodes = document.getElementById('btn-close-nodes');
+
+    if (btnNodes) {
+      btnNodes.addEventListener('click', () => {
+        this.toggleNodeEditor();
+      });
+    }
+
+    if (btnCloseNodes) {
+      btnCloseNodes.addEventListener('click', () => {
+        this.hideNodeEditor();
+      });
+    }
+  }
+
+  initNodeEditor() {
+    if (this.nodeEditor) return;
+
+    // Create node editor
+    this.nodeEditor = new NodeEditor('node-editor');
+
+    // Setup preview renderer
+    this.setupNodePreview();
+
+    // Handle evaluation results
+    this.nodeEditor.onEvaluate = (results) => {
+      this.onNodeGraphEvaluated(results);
+    };
+
+    // Add some default nodes
+    this.addDefaultNodes();
+  }
+
+  setupNodePreview() {
+    const previewContainer = document.getElementById('node-preview');
+    if (!previewContainer) return;
+
+    // Create scene
+    this.nodePreviewScene = new THREE.Scene();
+    this.nodePreviewScene.background = new THREE.Color(0x0f172a);
+
+    // Create camera
+    this.nodePreviewCamera = new THREE.PerspectiveCamera(
+      45,
+      previewContainer.clientWidth / previewContainer.clientHeight,
+      0.1,
+      1000
+    );
+    this.nodePreviewCamera.position.set(15, 15, 15);
+    this.nodePreviewCamera.lookAt(0, 0, 0);
+
+    // Create renderer
+    this.nodePreviewRenderer = new THREE.WebGLRenderer({ antialias: true });
+    this.nodePreviewRenderer.setSize(previewContainer.clientWidth, previewContainer.clientHeight);
+    this.nodePreviewRenderer.setPixelRatio(window.devicePixelRatio);
+    previewContainer.appendChild(this.nodePreviewRenderer.domElement);
+
+    // Add lights
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    this.nodePreviewScene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(10, 20, 10);
+    this.nodePreviewScene.add(directionalLight);
+
+    // Add grid
+    const gridHelper = new THREE.GridHelper(20, 20, 0x334155, 0x1e293b);
+    this.nodePreviewScene.add(gridHelper);
+
+    // Add axes
+    const axesHelper = new THREE.AxesHelper(5);
+    this.nodePreviewScene.add(axesHelper);
+
+    // OrbitControls for preview
+    import('three/examples/jsm/controls/OrbitControls.js').then(({ OrbitControls }) => {
+      const controls = new OrbitControls(this.nodePreviewCamera, this.nodePreviewRenderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+
+      // Animation loop
+      const animate = () => {
+        if (!this.isNodeEditorVisible) return;
+        requestAnimationFrame(animate);
+        controls.update();
+        this.nodePreviewRenderer.render(this.nodePreviewScene, this.nodePreviewCamera);
+      };
+      animate();
+    });
+
+    // Handle resize
+    window.addEventListener('resize', () => {
+      if (!this.isNodeEditorVisible) return;
+      const width = previewContainer.clientWidth;
+      const height = previewContainer.clientHeight;
+      this.nodePreviewCamera.aspect = width / height;
+      this.nodePreviewCamera.updateProjectionMatrix();
+      this.nodePreviewRenderer.setSize(width, height);
+    });
+  }
+
+  addDefaultNodes() {
+    if (!this.nodeEditor) return;
+
+    // Add a slider node
+    const slider = this.nodeEditor.addNode('slider', 50, 100);
+    slider.values.min = 0.5;
+    slider.values.max = 5;
+    slider.values.value = 2;
+
+    // Add a box node
+    const box = this.nodeEditor.addNode('box', 300, 100);
+
+    // Add output node
+    const output = this.nodeEditor.addNode('geometry-output', 550, 100);
+
+    // Connect slider to box width
+    this.nodeEditor.graph.connect(slider.id, 'value', box.id, 'width');
+
+    // Connect box to output
+    this.nodeEditor.graph.connect(box.id, 'geometry', output.id, 'geometry');
+  }
+
+  onNodeGraphEvaluated(results) {
+    // Clear previous generated meshes
+    for (const mesh of this.generatedMeshes) {
+      this.nodePreviewScene.remove(mesh);
+      if (mesh.geometry) mesh.geometry.dispose();
+      if (mesh.material) mesh.material.dispose();
+    }
+    this.generatedMeshes = [];
+
+    // Add new meshes to preview scene
+    for (const result of results) {
+      if (result.data?.meshes) {
+        for (const mesh of result.data.meshes) {
+          if (mesh) {
+            this.nodePreviewScene.add(mesh);
+            this.generatedMeshes.push(mesh);
+          }
+        }
+      }
+    }
+  }
+
+  toggleNodeEditor() {
+    this.isNodeEditorVisible = !this.isNodeEditorVisible;
+    const wrapper = document.getElementById('node-editor-wrapper');
+    const btn = document.getElementById('btn-nodes');
+
+    if (wrapper) {
+      wrapper.classList.toggle('hidden', !this.isNodeEditorVisible);
+    }
+
+    if (btn) {
+      btn.classList.toggle('active', this.isNodeEditorVisible);
+    }
+
+    if (this.isNodeEditorVisible) {
+      this.initNodeEditor();
+      setTimeout(() => {
+        this.nodeEditor?.resize();
+        this.nodeEditor?.fitView();
+      }, 100);
+    }
+  }
+
+  hideNodeEditor() {
+    this.isNodeEditorVisible = false;
+    const wrapper = document.getElementById('node-editor-wrapper');
+    const btn = document.getElementById('btn-nodes');
+
+    if (wrapper) wrapper.classList.add('hidden');
+    if (btn) btn.classList.remove('active');
   }
 
   setupTreeNavigator() {

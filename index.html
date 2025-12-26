@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BIMAC - Visor IFC 3D</title>
   <link rel="stylesheet" href="/src/styles/main.css">
+  <link rel="stylesheet" href="/src/styles/nodes.css">
 </head>
 <body>
   <div id="app">
@@ -49,6 +50,11 @@
       <button id="btn-section" class="btn" title="Plano de corte">
         <span class="icon">✂️</span>
         Seccionar
+      </button>
+      <div class="separator"></div>
+      <button id="btn-nodes" class="btn btn-nodes" title="Editor de nodos paramétricos">
+        <span class="icon">🔗</span>
+        Nodos
       </button>
       <div class="separator"></div>
       <div class="toolbar-group">
@@ -227,6 +233,24 @@
 
     <!-- Hidden file input -->
     <input type="file" id="file-input" accept=".ifc" hidden>
+
+    <!-- Node Editor -->
+    <div id="node-editor-wrapper" class="node-editor-container hidden">
+      <div class="node-editor-header">
+        <span class="node-editor-title">
+          <span>🔗</span>
+          Diseño Generativo - Editor de Nodos
+        </span>
+        <button id="btn-close-nodes" class="node-editor-close">Cerrar Editor</button>
+      </div>
+      <div class="split-view">
+        <div id="node-editor" class="split-panel"></div>
+        <div class="split-divider"></div>
+        <div id="node-preview" class="split-panel">
+          <!-- 3D preview will be rendered here -->
+        </div>
+      </div>
+    </div>
   </div>
 
   <script type="module" src="/src/main.js"></script>
