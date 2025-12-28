@@ -17,42 +17,42 @@
 
     <!-- Toolbar -->
     <div class="toolbar">
-      <button id="btn-load" class="btn btn-primary">
+      <button id="btn-load" class="btn btn-primary" title="Cargar archivo IFC (Ctrl+O)">
         <span class="icon">📂</span>
         Cargar IFC
       </button>
-      <button id="btn-tree" class="btn" title="Navegador de modelo">
+      <button id="btn-tree" class="btn disabled" title="Mostrar/Ocultar árbol de elementos" disabled>
         <span class="icon">🌳</span>
         Árbol
       </button>
-      <button id="btn-fit" class="btn" title="Ajustar vista">
+      <button id="btn-fit" class="btn disabled" title="Ajustar vista al modelo (F)" disabled>
         <span class="icon">🎯</span>
         Ajustar
       </button>
-      <button id="btn-ortho" class="btn" title="Vista ortográfica">
+      <button id="btn-ortho" class="btn" title="Alternar vista ortográfica/perspectiva (O)">
         <span class="icon">📐</span>
         Ortho
       </button>
       <div class="separator"></div>
-      <button id="btn-wireframe" class="btn" title="Modo wireframe">
+      <button id="btn-wireframe" class="btn disabled" title="Alternar modo alambre (W)" disabled>
         <span class="icon">🔲</span>
         Wireframe
       </button>
-      <button id="btn-transparent" class="btn" title="Modo transparente">
+      <button id="btn-transparent" class="btn disabled" title="Alternar transparencia (T)" disabled>
         <span class="icon">👁️</span>
         Transparente
       </button>
       <div class="separator"></div>
-      <button id="btn-measure" class="btn" title="Medir distancia">
+      <button id="btn-measure" class="btn disabled" title="Herramienta de medición (M)" disabled>
         <span class="icon">📏</span>
         Medir
       </button>
-      <button id="btn-section" class="btn" title="Plano de corte">
+      <button id="btn-section" class="btn disabled" title="Herramienta de sección (S)" disabled>
         <span class="icon">✂️</span>
         Seccionar
       </button>
       <div class="separator"></div>
-      <button id="btn-nodes" class="btn btn-nodes" title="Editor de nodos paramétricos">
+      <button id="btn-nodes" class="btn" title="Editor de nodos paramétricos (Ctrl+N)">
         <span class="icon">🔗</span>
         Nodos
       </button>
@@ -130,7 +130,7 @@
             </label>
           </div>
           <div class="effect-controls">
-            <label>Strength</label>
+            <label for="ml-denoise-strength">Strength</label>
             <input type="range" id="ml-denoise-strength" min="0" max="100" value="50">
             <span class="range-value">50%</span>
           </div>
@@ -144,12 +144,12 @@
             </label>
           </div>
           <div class="effect-controls">
-            <label>Radius</label>
+            <label for="ml-ssao-radius">Radius</label>
             <input type="range" id="ml-ssao-radius" min="4" max="32" value="16">
             <span class="range-value">16</span>
           </div>
           <div class="effect-controls">
-            <label>Intensity</label>
+            <label for="ml-ssao-intensity">Intensity</label>
             <input type="range" id="ml-ssao-intensity" min="0" max="200" value="100">
             <span class="range-value">1.0</span>
           </div>
@@ -163,7 +163,7 @@
             </label>
           </div>
           <div class="effect-controls">
-            <label>Amount</label>
+            <label for="ml-sharpen-amount">Amount</label>
             <input type="range" id="ml-sharpen-amount" min="0" max="100" value="30">
             <span class="range-value">30%</span>
           </div>
@@ -177,7 +177,7 @@
             </label>
           </div>
           <div class="effect-controls">
-            <label>Strength</label>
+            <label for="ml-edges-strength">Strength</label>
             <input type="range" id="ml-edges-strength" min="0" max="100" value="50">
             <span class="range-value">50%</span>
           </div>
@@ -191,17 +191,17 @@
             </label>
           </div>
           <div class="effect-controls">
-            <label>Exposure</label>
+            <label for="ml-color-exposure">Exposure</label>
             <input type="range" id="ml-color-exposure" min="50" max="200" value="100">
             <span class="range-value">1.0</span>
           </div>
           <div class="effect-controls">
-            <label>Contrast</label>
+            <label for="ml-color-contrast">Contrast</label>
             <input type="range" id="ml-color-contrast" min="50" max="200" value="100">
             <span class="range-value">1.0</span>
           </div>
           <div class="effect-controls">
-            <label>Saturation</label>
+            <label for="ml-color-saturation">Saturation</label>
             <input type="range" id="ml-color-saturation" min="0" max="200" value="100">
             <span class="range-value">1.0</span>
           </div>

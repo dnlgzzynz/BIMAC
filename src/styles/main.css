@@ -130,6 +130,16 @@ body {
   margin: 0 0.25rem;
 }
 
+/* Disabled state */
+.btn.disabled,
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  background-color: transparent;
+  border-color: var(--border-color);
+}
+
 /* Main Content */
 .main-content {
   flex: 1;
@@ -517,6 +527,7 @@ body {
   border-radius: 2px;
   outline: none;
   -webkit-appearance: none;
+  appearance: none;
 }
 
 .effect-controls input[type="range"]::-webkit-slider-thumb {
@@ -677,6 +688,7 @@ body {
 }
 
 .tree-node {
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -734,7 +746,7 @@ body {
 }
 
 .tree-children {
-  /* Children container */
+  padding-left: 0.875rem;
 }
 
 /* Tree animations */
