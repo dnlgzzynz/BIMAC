@@ -1,0 +1,379 @@
+# C02 - Rampa Vehicular Helicoidal Parametrica
+# Configuracion de parametros y materiales
+
+metadata:
+  id: C02
+  name: Rampa Vehicular Helicoidal
+  version: 1.0.0
+  category: Circulaciones
+  author: BIMAC
+
+# Parametros geometricos
+geometry:
+  radius:
+    inner_min: 5.0
+    inner_max: 15.0
+    inner_default: 7.5
+    outer_min: 8.0
+    outer_max: 25.0
+    outer_default: 12.5
+    unit: m
+
+  vertical:
+    rise_per_turn_min: 2.5
+    rise_per_turn_max: 4.0
+    rise_per_turn_default: 3.0
+    floor_height_typical: 3.0
+    unit: m
+
+  turns:
+    min: 0.5
+    max: 5.0
+    default: 2.0
+    increment: 0.25
+
+  slope:
+    min: 5.0
+    max: 15.0
+    default: 10.0
+    recommended_max: 12.0
+    unit: percent
+
+  superelevation:
+    min: 2.0
+    max: 6.0
+    default: 4.0
+    transition_length: 6.0
+    unit: percent
+
+  direction:
+    options: [clockwise, counterclockwise]
+    default: clockwise
+
+# Configuracion de carriles
+lanes:
+  single:
+    width: 3.5
+    shoulder_in: 0.3
+    shoulder_out: 0.5
+    total_width: 4.3
+
+  double:
+    width_per_lane: 3.25
+    separator: 0.0
+    shoulder_in: 0.3
+    shoulder_out: 0.5
+    total_width: 7.3
+
+  double_separated:
+    width_per_lane: 3.25
+    separator: 0.5
+    shoulder_in: 0.3
+    shoulder_out: 0.5
+    total_width: 7.8
+
+  triple:
+    width_per_lane: 3.0
+    separator: 0.0
+    shoulder_in: 0.3
+    shoulder_out: 0.5
+    total_width: 9.8
+
+# Estructura
+structure:
+  slab_types:
+    solid:
+      description: "Losa maciza de concreto"
+      thickness_min: 200
+      thickness_max: 350
+      thickness_formula: "span/30"
+      reinforcement: bidirectional
+      max_span: 8.0
+
+    ribbed:
+      description: "Losa nervada"
+      slab_thickness: 100
+      rib_depth: 300
+      rib_width: 200
+      rib_spacing: 1200
+      max_span: 12.0
+
+    steel_deck:
+      description: "Deck metalico con concreto"
+      deck_gauge: 20
+      concrete_thickness: 100
+      total_depth: 200
+      beam_spacing: 3000
+      max_span: 4.0
+
+    precast:
+      description: "Elementos pretensados"
+      element_width: 2400
+      element_depth: 400
+      max_span: 18.0
+
+  beams:
+    radial:
+      profiles: [W12x26, W14x30, W16x36, W18x40, W21x50]
+      spacing_min: 2.5
+      spacing_max: 4.0
+      default_profile: W14x30
+
+    perimeter:
+      inner:
+        profiles: [W12x26, W14x30, W16x36]
+        default: W14x30
+      outer:
+        profiles: [W14x30, W16x36, W18x40]
+        default: W16x36
+
+    spandrel:
+      depth_min: 300
+      depth_max: 600
+      width: 300
+
+  columns:
+    arrangement:
+      options: [radial, helical, perimeter_only]
+      default: radial
+
+    spacing:
+      angular_min: 30  # grados
+      angular_max: 60
+      default: 45
+
+    profiles:
+      round: [D400, D450, D500, D600, D750]
+      square: [400x400, 450x450, 500x500, 600x600]
+      default: D500
+
+  foundations:
+    isolated:
+      min_size: 1500
+      depth: 1200
+    combined:
+      width: 2000
+    ring:
+      width: 800
+      depth: 600
+
+# Barreras vehiculares
+barriers:
+  types:
+    f_shape:
+      height: 810
+      base_width: 610
+      top_width: 150
+      test_level: TL-4
+      description: "New Jersey modificado"
+
+    jersey:
+      height: 810
+      base_width: 355
+      top_width: 150
+      test_level: TL-4
+      description: "Barrera Jersey estandar"
+
+    single_slope:
+      height: 810
+      base_width: 230
+      angle: 9.1
+      test_level: TL-4
+      description: "Pendiente simple"
+
+    low_profile:
+      height: 510
+      base_width: 355
+      test_level: TL-2
+      description: "Perfil bajo interior"
+
+  materials:
+    concrete:
+      fc: 28  # MPa
+      reinforcement: "#4 @ 300"
+      cost_per_m: 450
+
+    steel:
+      profile: W-beam
+      post_spacing: 1900
+      cost_per_m: 380
+
+    cable:
+      strands: 3
+      post_spacing: 3000
+      cost_per_m: 250
+
+# Drenaje
+drainage:
+  longitudinal:
+    type: channel_drain
+    width: 150
+    depth: 100
+    location: inner_edge
+    slope: 1.0  # percent
+
+  transverse:
+    slope_to_drain: 2.0  # percent
+    drain_spacing: 10.0  # m
+
+  catch_basins:
+    size: 450x450
+    spacing: 15.0  # m
+    location: inner_edge
+
+  piping:
+    material: PVC
+    diameter_min: 100
+    diameter_max: 200
+    slope: 2.0  # percent
+
+# Senalizacion
+signage:
+  horizontal:
+    lane_marking:
+      width: 100
+      color: white
+      type: solid_edge
+    centerline:
+      width: 100
+      color: yellow
+      type: dashed
+    arrows:
+      spacing: 15.0  # m
+
+  vertical:
+    speed_limit: 15  # km/h
+    clearance_sign: true
+    direction_arrows: true
+
+  tactile:
+    warning_strips: true
+    width: 600
+
+# Iluminacion
+lighting:
+  type: LED
+  mounting: ceiling
+  spacing: 6.0  # m
+  lux_level: 50
+  emergency: true
+
+# Acabados
+finishes:
+  floor:
+    options: [exposed_concrete, epoxy, aggregate]
+    default: exposed_concrete
+    texture: broom_finish
+    color: natural
+
+  ceiling:
+    options: [exposed, painted, acoustic]
+    default: exposed
+
+  walls:
+    options: [concrete, painted, cladding]
+    default: painted
+
+# Materiales estructurales
+materials:
+  concrete:
+    fc_slab: 28  # MPa
+    fc_beam: 35
+    fc_column: 42
+    density: 2400  # kg/m3
+    cost_per_m3: 180
+
+  reinforcement:
+    fy: 420  # MPa
+    ratio_slab: 0.012
+    ratio_beam: 0.015
+    ratio_column: 0.020
+    cost_per_kg: 1.35
+
+  steel:
+    Fy: 345  # MPa
+    Fu: 450
+    E: 200000
+    density: 7850
+    cost_per_kg: 2.50
+
+# Costos
+costs:
+  structure:
+    concrete_per_m3: 180
+    rebar_per_kg: 1.35
+    formwork_per_m2: 45
+    steel_per_kg: 2.50
+
+  finishes:
+    epoxy_per_m2: 35
+    paint_per_m2: 12
+    striping_per_m: 8
+
+  barriers:
+    concrete_per_m: 450
+    steel_per_m: 380
+
+  drainage:
+    channel_per_m: 85
+    catch_basin_each: 650
+    piping_per_m: 45
+
+  lighting:
+    fixture_each: 350
+    wiring_per_m: 25
+
+# Parametros BIM
+bim_parameters:
+  - name: BIMAC_Ramp_InnerRadius
+    type: Length
+    group: Dimensions
+  - name: BIMAC_Ramp_OuterRadius
+    type: Length
+    group: Dimensions
+  - name: BIMAC_Ramp_TotalRise
+    type: Length
+    group: Dimensions
+  - name: BIMAC_Ramp_Turns
+    type: Number
+    group: Geometry
+  - name: BIMAC_Ramp_Slope
+    type: Number
+    group: Geometry
+  - name: BIMAC_Ramp_LaneCount
+    type: Integer
+    group: Traffic
+  - name: BIMAC_Ramp_Direction
+    type: Text
+    group: Geometry
+  - name: BIMAC_Ramp_Length
+    type: Length
+    group: Quantities
+  - name: BIMAC_Ramp_Area
+    type: Area
+    group: Quantities
+
+# Clasificacion
+classification:
+  uniclass: Ss_25_70_65  # Ramp structures
+  omniclass: 23-13 23 17  # Vehicular Ramps
+  ifc_class: IfcRamp
+  ifc_predefined_type: SPIRAL
+
+# Normativas
+codes:
+  - name: IBC
+    description: International Building Code
+    application: General design
+  - name: ACI_318
+    description: Building Code for Concrete
+    application: Structural design
+  - name: AASHTO
+    description: Highway Design
+    application: Barriers, geometry
+  - name: ITE
+    description: Parking Standards
+    application: Dimensions
+  - name: NFPA
+    description: Fire Code
+    application: Emergency access

@@ -34,3 +34,6 @@ npm-debug.log*
 
 # Test coverage
 coverage/
+
+# Familias BIM migradas fuera del repo (ver assets/migracion de assets.txt -> O:amilies)
+assets/families/

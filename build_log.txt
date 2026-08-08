@@ -1,0 +1,29 @@
+
+> bimac-ifc-viewer@1.0.0 build
+> vite build
+
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+transforming...
+[32mÔ£ô[39m 1284 modules transformed.
+x Build failed in 2.94s
+error during build:
+node_modules/@thatopen/components/dist/index.mjs (8:158): "Controls" is not exported by "node_modules/three/build/three.module.js", imported by "node_modules/@thatopen/components/dist/index.mjs".
+file: C:/Users/dyane/Documents/GitHub/BIMAC/node_modules/@thatopen/components/dist/index.mjs:8:158
+
+ 6: };
+ 7: import * as THREE$1 from "three";
+ 8: import { BufferAttribute, Vector3, Vector2, Plane, Line3, Triangle, Sphere, Matrix4, Box3, BackSide, DoubleSide, FrontSide, Mesh, Ray, Raycaster, Quaternion, Controls, ...
+                                                                                                                                                                  ^
+ 9: import * as FRAGS from "@thatopen/fragments";
+10: import { FragmentsGroup, Serializer } from "@thatopen/fragments";
+
+    at getRollupError (file:///C:/Users/dyane/Documents/GitHub/BIMAC/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at error (file:///C:/Users/dyane/Documents/GitHub/BIMAC/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
+    at Module.error (file:///C:/Users/dyane/Documents/GitHub/BIMAC/node_modules/rollup/dist/es/shared/node-entry.js:17022:16)
+    at Module.traceVariable (file:///C:/Users/dyane/Documents/GitHub/BIMAC/node_modules/rollup/dist/es/shared/node-entry.js:17478:29)
+    at ModuleScope.findVariable (file:///C:/Users/dyane/Documents/GitHub/BIMAC/node_modules/rollup/dist/es/shared/node-entry.js:15141:39)
+    at ChildScope.findVariable (file:///C:/Users/dyane/Documents/GitHub/BIMAC/node_modules/rollup/dist/es/shared/node-entry.js:5688:38)
+    at Identifier.bind (file:///C:/Users/dyane/Documents/GitHub/BIMAC/node_modules/rollup/dist/es/shared/node-entry.js:5462:40)
+    at ClassDeclaration.bind (file:///C:/Users/dyane/Documents/GitHub/BIMAC/node_modules/rollup/dist/es/shared/node-entry.js:2829:23)
+    at Program.bind (file:///C:/Users/dyane/Documents/GitHub/BIMAC/node_modules/rollup/dist/es/shared/node-entry.js:2825:28)
+    at Module.bindReferences (file:///C:/Users/dyane/Documents/GitHub/BIMAC/node_modules/rollup/dist/es/shared/node-entry.js:17001:18)

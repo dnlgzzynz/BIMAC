@@ -1,0 +1,366 @@
+# M02 - Sistema HVAC Modular Parametrico
+# Configuracion de parametros y especificaciones
+
+metadata:
+  id: M02
+  name: Sistema HVAC Modular
+  version: 1.0.0
+  category: MEP
+  author: BIMAC
+
+# Tipos de sistema
+system_types:
+  vav:
+    name: "Volumen de Aire Variable"
+    description: "Sistema con cajas VAV para control de zona"
+    components: [ahu, vav_box, diffuser, return_grille]
+    control: variable_volume
+    efficiency: high
+
+  cav:
+    name: "Volumen de Aire Constante"
+    description: "Sistema de flujo constante"
+    components: [ahu, diffuser, return_grille]
+    control: constant_volume
+    efficiency: medium
+
+  fan_coil:
+    name: "Fan Coil"
+    description: "Unidades terminales con ventilador"
+    components: [chiller, fan_coil_unit, supply_air, return_air]
+    control: zone_thermostat
+    efficiency: medium
+
+  vrf:
+    name: "Flujo Refrigerante Variable"
+    description: "Sistema VRF/VRV"
+    components: [outdoor_unit, indoor_unit, refrigerant_piping]
+    control: inverter
+    efficiency: very_high
+
+  doas:
+    name: "Aire Exterior Dedicado"
+    description: "Sistema DOAS + unidades terminales"
+    components: [doas_unit, terminal_unit, exhaust]
+    control: enthalpy_wheel
+    efficiency: very_high
+
+# Especificaciones de ductos
+duct_specifications:
+  rectangular:
+    material: galvanized_steel
+    gauges:
+      - max_dim: 300
+        gauge: 26
+        thickness: 0.55
+      - max_dim: 750
+        gauge: 24
+        thickness: 0.70
+      - max_dim: 1500
+        gauge: 22
+        thickness: 0.85
+      - max_dim: 2250
+        gauge: 20
+        thickness: 1.00
+      - max_dim: 9999
+        gauge: 18
+        thickness: 1.25
+    max_aspect_ratio: 4.0
+    reinforcement:
+      - max_dim: 450
+        type: none
+      - max_dim: 750
+        type: cross_break
+      - max_dim: 1500
+        type: standing_seam
+      - max_dim: 9999
+        type: angle_reinforcement
+
+  circular:
+    material: spiral_galvanized
+    gauges:
+      - max_diam: 200
+        gauge: 26
+      - max_diam: 450
+        gauge: 24
+      - max_diam: 900
+        gauge: 22
+      - max_diam: 9999
+        gauge: 20
+    diameters: [100, 125, 150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000]
+
+  flexible:
+    material: insulated_flex
+    max_length: 1800
+    diameters: [100, 125, 150, 200, 250, 300]
+    pressure_drop_factor: 2.5
+
+# Velocidades de diseno
+velocities:
+  main_duct:
+    low_velocity: 6.0
+    medium_velocity: 8.0
+    high_velocity: 10.0
+    max_velocity: 12.0
+
+  branch_duct:
+    low_velocity: 4.0
+    medium_velocity: 6.0
+    high_velocity: 8.0
+
+  diffuser_neck:
+    supply: 3.0
+    return: 2.5
+
+  outdoor_air:
+    intake: 2.5
+    exhaust: 5.0
+
+# Niveles de ruido
+noise_criteria:
+  private_office: NC-30
+  open_office: NC-40
+  conference_room: NC-30
+  lobby: NC-40
+  restaurant: NC-45
+  retail: NC-45
+  industrial: NC-55
+
+# Difusores y rejillas
+terminals:
+  supply_diffusers:
+    square_4way:
+      sizes: [225, 300, 375, 450, 525, 600]
+      cfm_range: [50, 800]
+      throw_ratio: 1.0
+      neck_velocity_max: 3.5
+
+    linear_slot:
+      widths: [25, 38, 50]
+      lengths: [600, 900, 1200, 1500, 1800, 2400]
+      slots: [1, 2, 3, 4]
+      cfm_per_m: [50, 200]
+
+    round_ceiling:
+      sizes: [150, 200, 250, 300, 350, 400]
+      cfm_range: [25, 400]
+      pattern: [360, 180, 90]
+
+    perforated_face:
+      sizes: [300, 450, 600]
+      cfm_range: [100, 600]
+      free_area: 0.25
+
+  return_grilles:
+    egg_crate:
+      sizes: [[300, 300], [450, 450], [600, 600], [600, 300], [900, 600]]
+      free_area: 0.80
+
+    perforated:
+      sizes: [[300, 300], [450, 450], [600, 600]]
+      free_area: 0.50
+
+    bar_grille:
+      bar_spacing: [12, 19, 25]
+      free_area: 0.70
+
+# Equipos
+equipment:
+  air_handling_units:
+    sizes:
+      - model: AHU-1000
+        cfm: 1000
+        dimensions: [1200, 800, 1000]
+        weight: 250
+      - model: AHU-2500
+        cfm: 2500
+        dimensions: [1500, 1000, 1200]
+        weight: 450
+      - model: AHU-5000
+        cfm: 5000
+        dimensions: [2000, 1200, 1500]
+        weight: 750
+      - model: AHU-10000
+        cfm: 10000
+        dimensions: [2500, 1500, 1800]
+        weight: 1200
+      - model: AHU-20000
+        cfm: 20000
+        dimensions: [3000, 2000, 2200]
+        weight: 2000
+    components: [filter, coil_cooling, coil_heating, fan, humidifier]
+
+  vav_boxes:
+    sizes:
+      - size: 150
+        cfm_range: [50, 250]
+      - size: 200
+        cfm_range: [100, 450]
+      - size: 250
+        cfm_range: [200, 700]
+      - size: 300
+        cfm_range: [300, 1000]
+      - size: 350
+        cfm_range: [400, 1400]
+      - size: 400
+        cfm_range: [600, 2000]
+    types: [single_duct, dual_duct, fan_powered]
+
+  fan_coil_units:
+    types:
+      horizontal_concealed:
+        heights: [200, 250, 300]
+        cfm_range: [200, 1200]
+      vertical_exposed:
+        heights: [600, 750, 900]
+        cfm_range: [300, 1000]
+      cassette:
+        sizes: [600x600, 840x840]
+        cfm_range: [400, 1400]
+
+# Aislamiento
+insulation:
+  types:
+    fiberglass:
+      density: 24
+      k_value: 0.036
+      thicknesses: [25, 38, 50, 75]
+      facing: FSK
+
+    elastomeric:
+      density: 60
+      k_value: 0.040
+      thicknesses: [19, 25, 38]
+      closed_cell: true
+
+    mineral_wool:
+      density: 48
+      k_value: 0.035
+      thicknesses: [25, 50, 75, 100]
+      fire_rating: A1
+
+  requirements:
+    supply_air:
+      unconditioned_space: 50
+      conditioned_space: 25
+    return_air:
+      unconditioned_space: 25
+      conditioned_space: 0
+    outdoor_air:
+      all: 50
+    exhaust:
+      all: 0
+
+# Accesorios de ducto
+fittings:
+  elbows:
+    types: [radius, square, vaned]
+    radius_ratios: [1.0, 1.5, 2.0]
+    loss_coefficients:
+      radius_1.0: 0.22
+      radius_1.5: 0.15
+      radius_2.0: 0.10
+      square_no_vanes: 1.20
+      square_single_vane: 0.45
+      square_double_vane: 0.25
+
+  transitions:
+    types: [reducer, increaser, offset]
+    max_angle: 30
+
+  tees:
+    types: [branch, bullhead, wye]
+
+  dampers:
+    types: [volume, fire, smoke, backdraft, balancing]
+    actuators: [manual, electric, pneumatic]
+
+# Soporteria
+supports:
+  trapeze:
+    rod_sizes: [10, 12, 16, 20]
+    max_span: 3000
+    spacing:
+      - duct_size: 450
+        max_spacing: 2400
+      - duct_size: 750
+        max_spacing: 3000
+      - duct_size: 1500
+        max_spacing: 3000
+      - duct_size: 9999
+        max_spacing: 2400
+
+  clamps:
+    types: [split_ring, clevis, u_bolt]
+    for_circular: true
+
+# Costos
+costs:
+  duct_rectangular:
+    fabrication_per_m2: 45
+    installation_per_m2: 35
+
+  duct_circular:
+    fabrication_per_m: 25
+    installation_per_m: 20
+
+  insulation:
+    material_per_m2: 18
+    installation_per_m2: 12
+
+  diffusers:
+    square_4way: 85
+    linear_per_m: 120
+    round: 65
+
+  equipment:
+    ahu_per_cfm: 2.50
+    vav_box: 450
+    fan_coil: 850
+
+# Parametros BIM
+bim_parameters:
+  - name: BIMAC_HVAC_SystemType
+    type: Text
+    group: Mechanical
+  - name: BIMAC_HVAC_CFM
+    type: Number
+    group: Mechanical
+  - name: BIMAC_Duct_Width
+    type: Length
+    group: Dimensions
+  - name: BIMAC_Duct_Height
+    type: Length
+    group: Dimensions
+  - name: BIMAC_Duct_Diameter
+    type: Length
+    group: Dimensions
+  - name: BIMAC_Duct_Velocity
+    type: Number
+    group: Mechanical
+  - name: BIMAC_Insulation_Thickness
+    type: Length
+    group: Mechanical
+  - name: BIMAC_Duct_Area
+    type: Area
+    group: Quantities
+
+# Clasificacion
+classification:
+  uniclass: Ss_55_70_33  # Ducted air systems
+  omniclass: 23-33 00 00  # HVAC
+  ifc_class: IfcDuctSegment
+  ifc_type: RIGIDSEGMENT
+
+# Normativas
+codes:
+  - name: ASHRAE_62.1
+    description: Ventilation for Acceptable Indoor Air Quality
+  - name: ASHRAE_90.1
+    description: Energy Standard for Buildings
+  - name: SMACNA
+    description: HVAC Duct Construction Standards
+  - name: NFPA_90A
+    description: Installation of HVAC Systems
+  - name: IMC
+    description: International Mechanical Code

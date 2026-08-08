@@ -1,0 +1,423 @@
+# F02 - Domo Geodesico Parametrico
+# Configuracion de parametros y materiales
+
+metadata:
+  id: F02
+  name: Domo Geodesico Parametrico
+  version: 1.0.0
+  category: Fachadas
+  author: BIMAC
+
+# Geometria base
+geometry:
+  base_polyhedra:
+    icosahedron:
+      vertices: 12
+      edges: 30
+      faces: 20
+      dihedral_angle: 138.19
+      description: "Poliedro regular de 20 caras triangulares"
+
+    octahedron:
+      vertices: 6
+      edges: 12
+      faces: 8
+      dihedral_angle: 109.47
+      description: "Poliedro regular de 8 caras triangulares"
+
+    tetrahedron:
+      vertices: 4
+      edges: 6
+      faces: 4
+      dihedral_angle: 70.53
+      description: "Poliedro regular de 4 caras triangulares"
+
+  frequencies:
+    1:
+      name: "1V"
+      chord_factors: [1.0]
+      unique_struts: 1
+      description: "Sin subdivision"
+    2:
+      name: "2V"
+      chord_factors: [0.5465, 0.6180]
+      unique_struts: 2
+      description: "Subdivision simple"
+    3:
+      name: "3V"
+      chord_factors: [0.3486, 0.4035, 0.4124]
+      unique_struts: 3
+      description: "Subdivision media"
+    4:
+      name: "4V"
+      chord_factors: [0.2533, 0.2946, 0.2985, 0.3128]
+      unique_struts: 6
+      description: "Subdivision fina"
+    5:
+      name: "5V"
+      chord_factors: [0.1981, 0.2311, 0.2326, 0.2449, 0.2454]
+      unique_struts: 9
+      description: "Subdivision muy fina"
+    6:
+      name: "6V"
+      chord_factors: [0.1625, 0.1899, 0.1907, 0.2013, 0.2016, 0.2035]
+      unique_struts: 9
+      description: "Subdivision ultra fina"
+
+  truncations:
+    full:
+      ratio: 1.0
+      angle: 180
+      description: "Esfera completa"
+    five_eighths:
+      ratio: 0.625
+      angle: 112.5
+      description: "5/8 de esfera"
+    half:
+      ratio: 0.5
+      angle: 90
+      description: "Hemisferio"
+    three_eighths:
+      ratio: 0.375
+      angle: 67.5
+      description: "3/8 de esfera"
+    quarter:
+      ratio: 0.25
+      angle: 45
+      description: "1/4 de esfera"
+
+# Perfiles estructurales
+strut_profiles:
+  # Tubos circulares (HSS Round)
+  round:
+    D33x2:
+      diameter: 33.4
+      wall: 2.0
+      weight: 1.56
+      area: 197
+      I: 22600
+      description: "Tubo ligero"
+    D42x2.5:
+      diameter: 42.2
+      wall: 2.5
+      weight: 2.45
+      area: 312
+      I: 56200
+      description: "Tubo estandar pequeno"
+    D48x3:
+      diameter: 48.3
+      wall: 3.0
+      weight: 3.35
+      area: 427
+      I: 94500
+      description: "Tubo estandar"
+    D60x3:
+      diameter: 60.3
+      wall: 3.0
+      weight: 4.24
+      area: 540
+      I: 189000
+      description: "Tubo medio"
+    D76x4:
+      diameter: 76.1
+      wall: 4.0
+      weight: 7.11
+      area: 906
+      I: 493000
+      description: "Tubo pesado"
+    D89x4:
+      diameter: 88.9
+      wall: 4.0
+      weight: 8.38
+      area: 1068
+      I: 802000
+      description: "Tubo muy pesado"
+    D114x5:
+      diameter: 114.3
+      wall: 5.0
+      weight: 13.5
+      area: 1717
+      I: 2120000
+      description: "Tubo estructural"
+    D140x6:
+      diameter: 139.7
+      wall: 6.0
+      weight: 19.8
+      area: 2521
+      I: 4640000
+      description: "Tubo estructural pesado"
+    D168x6:
+      diameter: 168.3
+      wall: 6.0
+      weight: 24.0
+      area: 3058
+      I: 8170000
+      description: "Tubo estructural muy pesado"
+
+  # Perfiles rectangulares (HSS Square)
+  square:
+    40x40x3:
+      width: 40
+      height: 40
+      wall: 3.0
+      weight: 3.30
+      area: 420
+      Ix: 73800
+    50x50x3:
+      width: 50
+      height: 50
+      wall: 3.0
+      weight: 4.25
+      area: 541
+      Ix: 152000
+    60x60x4:
+      width: 60
+      height: 60
+      wall: 4.0
+      weight: 6.71
+      area: 854
+      Ix: 351000
+    80x80x4:
+      width: 80
+      height: 80
+      wall: 4.0
+      weight: 9.22
+      area: 1174
+      Ix: 858000
+
+# Tipos de nodo (hub)
+node_types:
+  spherical:
+    name: "Nodo Esferico"
+    connections: 5-12
+    material: steel
+    description: "Hub esferico soldado o fundido"
+    complexity: high
+
+  plate:
+    name: "Nodo de Placas"
+    connections: 5-8
+    material: steel
+    description: "Placas soldadas formando hub"
+    complexity: medium
+
+  flattened:
+    name: "Nodo Aplastado"
+    connections: 5-6
+    material: steel
+    description: "Extremos aplastados con perno pasante"
+    complexity: low
+
+  bolt_through:
+    name: "Perno Pasante"
+    connections: 4-6
+    material: steel
+    description: "Conexion simple con perno"
+    complexity: very_low
+
+# Tipos de panel
+panel_types:
+  triangle:
+    name: "Triangular"
+    sides: 3
+    description: "Panel triangular estandar"
+    materials: [glass, polycarbonate, etfe, aluminum, steel]
+
+  hexagon:
+    name: "Hexagonal"
+    sides: 6
+    description: "Panel hexagonal (Fuller)"
+    materials: [glass, polycarbonate, aluminum]
+
+  pentagon:
+    name: "Pentagonal"
+    sides: 5
+    description: "Panel pentagonal (12 por domo)"
+    materials: [glass, polycarbonate, aluminum]
+
+# Materiales de panel
+panel_materials:
+  glass:
+    name: "Vidrio templado"
+    density: 2500
+    thickness_range: [6, 12]
+    default_thickness: 8
+    U_value: 5.7
+    SHGC: 0.82
+    visible_transmittance: 0.89
+    cost_per_m2: 180
+
+  glass_double:
+    name: "Vidrio doble"
+    density: 2500
+    thickness_range: [16, 28]
+    default_thickness: 24
+    U_value: 2.8
+    SHGC: 0.65
+    visible_transmittance: 0.78
+    cost_per_m2: 320
+
+  polycarbonate:
+    name: "Policarbonato"
+    density: 1200
+    thickness_range: [6, 25]
+    default_thickness: 16
+    U_value: 2.3
+    SHGC: 0.55
+    visible_transmittance: 0.82
+    cost_per_m2: 85
+
+  etfe:
+    name: "ETFE"
+    density: 350
+    thickness_range: [0.2, 0.5]
+    default_thickness: 0.25
+    U_value: 3.5
+    SHGC: 0.90
+    visible_transmittance: 0.94
+    cost_per_m2: 250
+
+  aluminum:
+    name: "Aluminio composite"
+    density: 2700
+    thickness_range: [3, 6]
+    default_thickness: 4
+    U_value: 6.0
+    SHGC: 0.0
+    visible_transmittance: 0.0
+    cost_per_m2: 95
+
+  steel:
+    name: "Acero galvanizado"
+    density: 7850
+    thickness_range: [0.8, 2.0]
+    default_thickness: 1.2
+    U_value: 6.5
+    SHGC: 0.0
+    visible_transmittance: 0.0
+    cost_per_m2: 65
+
+# Materiales estructurales
+structural_materials:
+  steel:
+    A36:
+      Fy: 250
+      Fu: 400
+      E: 200000
+      density: 7850
+      cost_per_kg: 1.25
+    A500_Gr_B:
+      Fy: 290
+      Fu: 400
+      E: 200000
+      density: 7850
+      cost_per_kg: 1.35
+    A500_Gr_C:
+      Fy: 317
+      Fu: 427
+      E: 200000
+      density: 7850
+      cost_per_kg: 1.40
+
+  aluminum:
+    6061_T6:
+      Fy: 240
+      Fu: 290
+      E: 69000
+      density: 2700
+      cost_per_kg: 4.50
+    6063_T5:
+      Fy: 145
+      Fu: 185
+      E: 69000
+      density: 2700
+      cost_per_kg: 4.20
+
+# Anillo de tension
+tension_ring:
+  profiles:
+    cable:
+      types: [7x19, 1x37, 1x61]
+      material: stainless_316
+      description: "Cable de acero inoxidable"
+    rod:
+      diameters: [16, 20, 25, 32, 40]
+      material: A36
+      description: "Varilla solida"
+    tube:
+      profiles: [D48x3, D60x3, D76x4]
+      material: A500_Gr_B
+      description: "Tubo estructural"
+
+# Cargas
+loads:
+  dead:
+    structure_factor: 1.0
+    panel_factor: 1.0
+
+  live:
+    maintenance: 0.5  # kN/m2
+    snow_factor: 0.7  # Factor de forma para domos
+
+  wind:
+    pressure_coefficients:
+      windward: 0.8
+      leeward: -0.5
+      side: -0.7
+      roof_negative: -1.0
+    shape_factor: 0.5  # Reduccion por forma curva
+
+# Costos
+costs:
+  fabrication:
+    strut_cutting: 8.50        # USD/corte
+    strut_drilling: 3.50       # USD/agujero
+    node_welding: 45.00        # USD/nodo
+    node_machining: 85.00      # USD/nodo (esférico)
+
+  installation:
+    erection_rate: 15.00       # USD/m2
+    crane_daily: 1200.00       # USD/dia
+    scaffold_weekly: 2500.00   # USD/semana
+
+  finishing:
+    galvanizing: 0.85          # USD/kg
+    powder_coating: 1.20       # USD/kg
+    painting: 0.45             # USD/kg
+
+# Parametros BIM
+bim_parameters:
+  - name: BIMAC_Dome_Radius
+    type: Length
+    group: Dimensions
+  - name: BIMAC_Dome_Frequency
+    type: Integer
+    group: Geometry
+  - name: BIMAC_Dome_Truncation
+    type: Number
+    group: Geometry
+  - name: BIMAC_Strut_Profile
+    type: Text
+    group: Structural
+  - name: BIMAC_Panel_Type
+    type: Text
+    group: Enclosure
+  - name: BIMAC_Total_Struts
+    type: Integer
+    group: Quantities
+  - name: BIMAC_Total_Nodes
+    type: Integer
+    group: Quantities
+  - name: BIMAC_Surface_Area
+    type: Area
+    group: Quantities
+  - name: BIMAC_Structure_Weight
+    type: Number
+    group: Quantities
+
+# Clasificacion
+classification:
+  uniclass: Ss_25_10_30  # Dome structures
+  omniclass: 23-13 17 00  # Domes
+  ifc_class: IfcRoof
+  ifc_predefined_type: DOME

@@ -1,0 +1,126 @@
+# =============================================================================
+# ESTÁNDARES ESTRUCTURALES - CUBIERTAS PARAMÉTRICAS BIMAC
+# =============================================================================
+# Restricciones estructurales por tipo de cubierta.
+# Basado en normativas NMX, ISO y prácticas de la industria.
+# =============================================================================
+
+# Restricciones por tipo de cubierta
+structural:
+  organic:
+    description: "Superficies NURBS orgánicas - Museos y centros culturales"
+    max_span: 15000          # mm - Luz libre máxima
+    min_slope: 2.0           # % - Pendiente mínima para drenaje
+    max_deflection: 250      # L/X donde L es la luz
+    max_height: 15000        # mm - Altura máxima
+    min_curvature_radius: 3000  # mm - Radio mínimo de curvatura
+
+  tensile:
+    description: "Membranas tensadas - Estadios y grandes cubiertas"
+    max_span: 50000          # Tensoestructuras permiten grandes luces
+    min_slope: 5.0           # Mayor pendiente para evitar acumulación
+    max_deflection: 50       # Más flexible que estructuras rígidas
+    max_height: 30000
+    min_pretension: 1.0      # kN/m - Pretensión mínima
+    max_cable_stress: 0.45   # Factor de capacidad de cables
+
+  gridshell:
+    description: "Mallas estructurales - Pabellones e invernaderos"
+    max_span: 35000
+    min_slope: 3.0
+    max_deflection: 200
+    max_height: 25000
+    min_member_spacing: 1000  # mm - Separación mínima de elementos
+    max_member_length: 6000   # mm - Longitud máxima de barra
+
+  folded:
+    description: "Placas plegadas - Naves industriales"
+    max_span: 25000
+    min_slope: 1.5
+    max_deflection: 300
+    max_height: 12000
+    min_fold_angle: 15       # grados - Ángulo mínimo de pliegue
+    max_fold_angle: 60
+
+  shell:
+    description: "Cascarones delgados - Auditorios"
+    max_span: 60000          # Cascarones pueden cubrir grandes luces
+    min_slope: 0             # Pueden ser horizontales en el centro
+    max_deflection: 300
+    max_height: 20000
+    min_thickness_ratio: 200  # Relación luz/espesor mínima
+
+  vault:
+    description: "Bóvedas paramétricas - Espacios religiosos y culturales"
+    max_span: 30000
+    min_slope: 0
+    max_deflection: 250
+    max_height: 25000
+    max_rise_ratio: 0.5      # Relación flecha/luz máxima
+
+# Tolerancias de fabricación (mm)
+fabrication:
+  panel_length: 2            # ±2mm en longitud
+  panel_width: 2             # ±2mm en ancho
+  planarity: 5               # Desviación máxima de planaridad
+  curvature_radius: 50       # ±50mm en radio de curvatura
+  edge_alignment: 3          # Alineación de bordes
+  hole_position: 1.5         # Posición de perforaciones
+
+# Tolerancias de instalación (mm)
+installation:
+  panel_gap: 10              # Junta entre paneles
+  alignment: 5               # Alineación general
+  level: 3                   # Nivelación horizontal
+  plumb: 3                   # Verticalidad
+
+# Cargas de diseño
+loads:
+  dead_load:
+    panel_light: 0.15        # kN/m² - Paneles ligeros (policarbonato)
+    panel_medium: 0.25       # kN/m² - Paneles medios
+    panel_heavy: 0.50        # kN/m² - Paneles pesados (vidrio)
+    structure: 0.20          # kN/m² - Estructura secundaria
+    installations: 0.10      # kN/m² - Instalaciones
+
+  live_load:
+    maintenance: 0.40        # kN/m² - Carga de mantenimiento
+    roof_access: 1.00        # kN/m² - Si hay acceso a cubierta
+
+  environmental:
+    wind_basic: 0.50         # kN/m² - Presión básica de viento
+    wind_suction: -0.70      # kN/m² - Succión de viento
+    rain_accumulation: 0.20  # kN/m² - Acumulación de agua
+    snow: 0.00               # kN/m² - Para zona de México
+
+# Factores de seguridad
+safety_factors:
+  dead_load: 1.3
+  live_load: 1.5
+  wind_load: 1.4
+  seismic: 1.0               # Ya incluido en análisis sísmico
+
+# Normativas de referencia
+references:
+  - code: "NMX-C-406-ONNCCE"
+    description: "Estructuras de acero para edificación"
+  - code: "NTC-2017-CDMX"
+    description: "Normas Técnicas Complementarias - Diseño y Construcción"
+  - code: "ISO 19650"
+    description: "Gestión de información BIM"
+  - code: "ASCE 7-22"
+    description: "Cargas de diseño (referencia)"
+  - code: "EN 13782"
+    description: "Estructuras temporales - Carpas"
+
+# Clasificación de fuego requerida por uso
+fire_rating:
+  public_assembly:
+    min_rating: "B-s1,d0"
+    egress_time: 5           # minutos
+  commercial:
+    min_rating: "C-s2,d1"
+    egress_time: 8
+  industrial:
+    min_rating: "D-s2,d2"
+    egress_time: 10

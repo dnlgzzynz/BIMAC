@@ -1,0 +1,252 @@
+# F01 - Muro Cortina Parametrico
+# Configuracion del componente
+
+component:
+  id: "F01"
+  name: "Muro Cortina Parametrico"
+  category: "fachadas"
+  version: "1.0.0"
+  author: "BIMAC"
+  created: "2025-12-27"
+  status: "development"
+
+# Parametros por defecto
+defaults:
+  geometry:
+    u_divisions: 10
+    v_divisions: 5
+    module_width: 1500        # mm
+    module_height: 3600       # mm
+    corner_angle_min: 45      # grados (minimo para esquinas)
+
+  mullions:
+    type: "standard"          # standard | thermal | structural
+    width: 65                 # mm
+    depth: 150                # mm
+    material: "aluminum_6063"
+    finish: "anodized_natural"
+
+  transoms:
+    width: 50                 # mm
+    depth: 120                # mm
+    material: "aluminum_6063"
+    finish: "anodized_natural"
+
+  panels:
+    glass_type: "double"      # single | double | triple
+    glass_thickness: 24       # mm (total)
+    outer_glass: 6            # mm
+    cavity: 12                # mm (camara de aire/argon)
+    inner_glass: 6            # mm
+    coating: "low_e"          # clear | tinted | low_e | reflective
+    spandrel_height: 900      # mm
+    spandrel_insulation: 50   # mm
+    pattern: "mixed"          # vision | mixed | alternating | custom
+    vision_percent: 70        # %
+
+  structural:
+    max_span: 4500            # mm
+    wind_load: 1.2            # kPa
+    seismic_zone: "C"         # A | B | C | D
+    anchor_spacing: 1800      # mm
+    deflection_limit: 175     # L/175 (span/limit)
+
+# Restricciones
+constraints:
+  geometry:
+    min_module_width: 600
+    max_module_width: 3000
+    min_module_height: 1000
+    max_module_height: 4500
+    min_u_divisions: 1
+    max_u_divisions: 100
+    min_v_divisions: 1
+    max_v_divisions: 50
+
+  mullions:
+    min_width: 40
+    max_width: 150
+    min_depth: 50
+    max_depth: 250
+
+  panels:
+    min_glass_thickness: 6
+    max_glass_thickness: 44
+    min_spandrel_height: 0
+    max_spandrel_height: 1200
+    min_vision_percent: 30
+    max_vision_percent: 100
+
+  structural:
+    min_wind_load: 0.5
+    max_wind_load: 3.0
+    min_anchor_spacing: 1000
+    max_anchor_spacing: 3000
+
+# Materiales disponibles
+materials:
+  aluminum:
+    - id: "aluminum_6063"
+      name: "Aluminio 6063-T5"
+      density: 2700            # kg/m3
+      yield_strength: 110      # MPa
+      modulus: 69000           # MPa
+    - id: "aluminum_6061"
+      name: "Aluminio 6061-T6"
+      density: 2700
+      yield_strength: 240
+      modulus: 69000
+
+  glass:
+    - id: "clear_6"
+      name: "Vidrio claro 6mm"
+      thickness: 6
+      u_value: 5.8
+      shgc: 0.82
+    - id: "low_e_double_24"
+      name: "DVH Low-E 6+12+6"
+      thickness: 24
+      u_value: 1.6
+      shgc: 0.42
+    - id: "triple_36"
+      name: "Triple 6+12+6+12+6"
+      thickness: 42
+      u_value: 0.8
+      shgc: 0.35
+
+  finishes:
+    - id: "anodized_natural"
+      name: "Anodizado natural"
+      thickness: 20            # micras
+    - id: "anodized_bronze"
+      name: "Anodizado bronce"
+      thickness: 20
+    - id: "powder_ral9005"
+      name: "Pintura electrostatica RAL 9005"
+      thickness: 80
+    - id: "pvdf_white"
+      name: "PVDF Blanco"
+      thickness: 35
+
+# Sistemas soportados
+systems:
+  - id: "stick"
+    name: "Stick System"
+    description: "Sistema tradicional de palo y travesano"
+    prefab_level: "low"
+    curve_support: true
+    max_height: 50000         # mm
+
+  - id: "unitized"
+    name: "Unitized System"
+    description: "Sistema modular prefabricado"
+    prefab_level: "high"
+    curve_support: false
+    max_height: 200000
+
+  - id: "structural_glazing"
+    name: "Structural Glazing"
+    description: "Vidrio estructural con silicona"
+    prefab_level: "medium"
+    curve_support: true
+    max_height: 30000
+
+  - id: "point_fixed"
+    name: "Point-Fixed Spider"
+    description: "Vidrio fijo con rotulas"
+    prefab_level: "high"
+    curve_support: true
+    max_height: 20000
+
+# Costos base (MXN/m2)
+costs:
+  mullions:
+    standard: 450
+    thermal: 680
+    structural: 920
+
+  glass:
+    single_clear: 380
+    double_clear: 650
+    double_low_e: 1100
+    triple_low_e: 1850
+
+  spandrel:
+    aluminum_composite: 520
+    insulated_panel: 780
+    glass_opaque: 950
+
+  accessories:
+    gaskets_per_m: 45
+    sealant_per_m: 85
+    anchors_each: 350
+
+  labor:
+    stick_per_m2: 850
+    unitized_per_m2: 450
+    structural_per_m2: 1200
+
+# Parametros BIM
+bim:
+  shared_parameters:
+    - name: "BIMAC_CW_SystemType"
+      type: "Text"
+      group: "Identity Data"
+    - name: "BIMAC_CW_GlassType"
+      type: "Text"
+      group: "Materials"
+    - name: "BIMAC_CW_UValue"
+      type: "Number"
+      group: "Energy Analysis"
+    - name: "BIMAC_CW_SHGC"
+      type: "Number"
+      group: "Energy Analysis"
+    - name: "BIMAC_CW_VisionPercent"
+      type: "Number"
+      group: "Identity Data"
+    - name: "BIMAC_CW_PanelArea"
+      type: "Area"
+      group: "Dimensions"
+    - name: "BIMAC_CW_MullionLength"
+      type: "Length"
+      group: "Dimensions"
+    - name: "BIMAC_CW_CostEstimate"
+      type: "Currency"
+      group: "Other"
+
+  classification:
+    uniclass: "Ss_25_10_20"    # Curtain wall systems
+    omniclass: "23-17 13 11"   # Curtain Wall Assemblies
+    ifc_class: "IfcCurtainWall"
+    ifc_type: "NOTDEFINED"
+
+# Exportacion
+export:
+  revit:
+    family_template: "Metric Curtain Wall Panel.rft"
+    category: "Curtain Panels"
+    schedule_name: "BIMAC_CW_Schedule"
+
+  ifc:
+    version: "IFC4"
+    property_sets:
+      - "Pset_CurtainWallCommon"
+      - "BIMAC_CurtainWallProperties"
+    quantity_sets:
+      - "Qto_CurtainWallBaseQuantities"
+
+# Validaciones
+validations:
+  - name: "deflection_check"
+    description: "Verificar deflexion maxima"
+    formula: "span / deflection_limit"
+    max_value: "mullion_depth / 2"
+
+  - name: "thermal_bridge"
+    description: "Verificar puente termico"
+    condition: "mullion_type == 'thermal' if u_value_target < 2.0"
+
+  - name: "vision_area"
+    description: "Verificar area de vision minima"
+    min_value: 30
+    unit: "%"

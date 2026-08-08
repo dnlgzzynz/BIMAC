@@ -1,0 +1,432 @@
+# M01 - Rack de Tuberias Parametrico
+# Configuracion del componente
+
+component:
+  id: "M01"
+  name: "Rack de Tuberias Parametrico"
+  category: "instalaciones"
+  version: "1.0.0"
+  author: "BIMAC"
+  created: "2025-12-27"
+  status: "development"
+
+# Parametros por defecto
+defaults:
+  geometry:
+    total_length: 30000        # mm
+    bay_spacing: 6000          # mm
+    width: 3000                # mm
+    height: 6000               # mm
+    elevation: 0               # mm desde NPT
+    tier_count: 3              # Numero de niveles
+    tier_spacing: 1000         # mm entre niveles
+    first_tier_height: 3500    # mm desde base
+
+  structure:
+    frame_type: "portal_frame"
+    column_profile: "W12x26"
+    beam_profile: "W10x22"
+    strut_profile: "W8x18"
+    bracing_profile: "L4x4x3/8"
+    bracing_type: "X"
+    material: "A36"
+
+  supports:
+    default_type: "shoe"
+    spacing: 3000              # mm
+    insulation_gap: 50         # mm
+    shoe_height: 100           # mm
+    guide_clearance: 3         # mm
+
+  cable_tray:
+    include_tray: true
+    tray_type: "ladder"
+    tray_width: 600            # mm
+    tray_height: 100           # mm
+    tray_tier: 1               # Nivel de bandeja
+
+# Tipologias de marco
+frame_types:
+  portal_frame:
+    name: "Marco Portal Simple"
+    description: "Columnas y vigas en configuracion portal"
+    bay_max: 12000
+    height_max: 12000
+    column_options: ["W", "HSS", "Pipe"]
+    beam_options: ["W", "HSS", "C"]
+    applications: ["plantas_proceso", "refineria", "petroquimica"]
+
+  truss_frame:
+    name: "Marco con Armadura"
+    description: "Vigas tipo armadura para claros largos"
+    bay_min: 9000
+    bay_max: 24000
+    height_max: 15000
+    truss_depth_ratio: 0.10    # Peralte/claro
+    applications: ["claros_largos", "cruces_viales"]
+
+  cantilever:
+    name: "Voladizo Lateral"
+    description: "Estructura en voladizo desde edificio o rack principal"
+    cantilever_max: 6000
+    height_max: 10000
+    requires_anchor: true
+    applications: ["junto_edificios", "ampliaciones"]
+
+  elevated:
+    name: "Elevado sobre Columnas"
+    description: "Rack elevado para cruces de vialidad"
+    clearance_min: 5500        # Altura libre minima
+    height_max: 15000
+    column_spacing_max: 15000
+    applications: ["cruces_vialidad", "accesos"]
+
+  ground_mounted:
+    name: "Montado a Nivel"
+    description: "Soportes bajos a nivel de piso"
+    height_max: 4000
+    simple_columns: true
+    applications: ["tuberias_bajas", "areas_proceso"]
+
+# Perfiles estructurales disponibles
+profiles:
+  columns:
+    W_shapes:
+      - {name: "W6x15", weight: 22.3, Ix: 2940, Sx: 98.3}
+      - {name: "W8x18", weight: 26.8, Ix: 6120, Sx: 153}
+      - {name: "W10x22", weight: 32.7, Ix: 11800, Sx: 236}
+      - {name: "W12x26", weight: 38.7, Ix: 20400, Sx: 340}
+      - {name: "W12x40", weight: 59.5, Ix: 31000, Sx: 517}
+      - {name: "W14x30", weight: 44.6, Ix: 29100, Sx: 416}
+      - {name: "W14x48", weight: 71.4, Ix: 48500, Sx: 693}
+
+    HSS_shapes:
+      - {name: "HSS6x6x1/4", weight: 21.6, Ix: 2510}
+      - {name: "HSS8x8x5/16", weight: 37.4, Ix: 6520}
+      - {name: "HSS10x10x3/8", weight: 58.1, Ix: 13100}
+      - {name: "HSS12x12x1/2", weight: 93.3, Ix: 26400}
+
+    Pipe:
+      - {name: "Pipe6-Std", weight: 28.6, Ix: 1890}
+      - {name: "Pipe8-Std", weight: 43.4, Ix: 4560}
+      - {name: "Pipe10-Std", weight: 54.7, Ix: 8220}
+      - {name: "Pipe12-Std", weight: 65.4, Ix: 13500}
+
+  beams:
+    W_shapes:
+      - {name: "W8x18", weight: 26.8, Ix: 6120}
+      - {name: "W10x22", weight: 32.7, Ix: 11800}
+      - {name: "W12x26", weight: 38.7, Ix: 20400}
+      - {name: "W14x30", weight: 44.6, Ix: 29100}
+      - {name: "W16x36", weight: 53.6, Ix: 44800}
+
+    C_shapes:
+      - {name: "C8x11.5", weight: 17.1, Ix: 1920}
+      - {name: "C10x15.3", weight: 22.8, Ix: 3620}
+      - {name: "C12x20.7", weight: 30.8, Ix: 5950}
+
+  bracing:
+    L_shapes:
+      - {name: "L3x3x1/4", weight: 7.11, A: 1.44}
+      - {name: "L4x4x3/8", weight: 14.2, A: 2.86}
+      - {name: "L5x5x1/2", weight: 23.6, A: 4.75}
+      - {name: "L6x6x1/2", weight: 28.7, A: 5.77}
+
+# Tipos de soporte de tuberia
+support_types:
+  shoe:
+    name: "Zapata (Shoe)"
+    description: "Soporte fijo que permite movimiento axial"
+    allows_axial: true
+    allows_lateral: false
+    material: "carbon_steel"
+    base_cost: 450
+
+  guide:
+    name: "Guia"
+    description: "Permite movimiento axial, restringe lateral"
+    allows_axial: true
+    allows_lateral: false
+    clearance: 3              # mm
+    material: "carbon_steel"
+    base_cost: 650
+
+  anchor:
+    name: "Anclaje"
+    description: "Punto fijo, sin movimiento"
+    allows_axial: false
+    allows_lateral: false
+    material: "carbon_steel"
+    base_cost: 850
+
+  hanger:
+    name: "Colgante"
+    description: "Soporte suspendido desde arriba"
+    types: ["rod", "spring", "constant"]
+    material: "carbon_steel"
+    base_cost: 750
+
+  roller:
+    name: "Rodillo"
+    description: "Permite movimiento axial libre"
+    allows_axial: true
+    allows_lateral: false
+    friction: 0.03
+    material: "carbon_steel"
+    base_cost: 950
+
+  spring:
+    name: "Resorte Variable"
+    description: "Soporte con resorte para cargas variables"
+    travel_range: 100         # mm
+    material: "carbon_steel"
+    base_cost: 2500
+
+  constant:
+    name: "Carga Constante"
+    description: "Mantiene carga constante durante movimiento"
+    travel_range: 150         # mm
+    material: "carbon_steel"
+    base_cost: 4500
+
+# Bandejas de cables
+cable_tray_types:
+  ladder:
+    name: "Bandeja Escalera"
+    description: "Tipo escalera para cables de potencia"
+    ventilation: 95           # %
+    load_capacity: 150        # kg/m
+    widths: [300, 450, 600, 900]
+    depths: [75, 100, 150]
+    cost_per_m: 850
+
+  solid:
+    name: "Bandeja Solida"
+    description: "Bandeja cerrada con tapa"
+    ventilation: 0
+    load_capacity: 100        # kg/m
+    widths: [200, 300, 450, 600]
+    depths: [50, 75, 100]
+    cost_per_m: 1200
+
+  mesh:
+    name: "Bandeja Malla"
+    description: "Malla de alambre, ligera"
+    ventilation: 80           # %
+    load_capacity: 50         # kg/m
+    widths: [200, 300, 450, 600]
+    depths: [50, 75, 100]
+    cost_per_m: 650
+
+  channel:
+    name: "Canal"
+    description: "Para cables de instrumentacion"
+    ventilation: 0
+    load_capacity: 25         # kg/m
+    widths: [50, 75, 100, 150]
+    depths: [25, 50]
+    cost_per_m: 350
+
+# Materiales
+materials:
+  structural:
+    A36:
+      name: "ASTM A36"
+      Fy: 250                 # MPa
+      Fu: 400                 # MPa
+      E: 200000               # MPa
+      density: 7850           # kg/m3
+      cost_per_kg: 28
+
+    A572_Gr50:
+      name: "ASTM A572 Gr 50"
+      Fy: 345                 # MPa
+      Fu: 450                 # MPa
+      E: 200000
+      density: 7850
+      cost_per_kg: 32
+
+    A500_Gr_B:
+      name: "ASTM A500 Gr B (HSS)"
+      Fy: 290                 # MPa
+      Fu: 400                 # MPa
+      E: 200000
+      density: 7850
+      cost_per_kg: 35
+
+  pipe:
+    carbon_steel:
+      name: "Acero al Carbono"
+      specs: ["A106 Gr B", "A53 Gr B"]
+      cost_per_kg: 32
+
+    stainless_304:
+      name: "Inoxidable 304"
+      specs: ["A312 TP304"]
+      cost_per_kg: 180
+
+    stainless_316:
+      name: "Inoxidable 316"
+      specs: ["A312 TP316"]
+      cost_per_kg: 250
+
+# Cargas de diseno
+design_loads:
+  dead_load:
+    structure_self: 1.0       # Factor de peso propio
+    pipe_full: 1.2            # Factor para tuberia llena
+    insulation: 1.0           # Factor de aislamiento
+
+  live_load:
+    maintenance: 1.0          # kN/m2 (carga de mantenimiento)
+    walkway: 2.0              # kN/m2 (pasarela)
+
+  wind_load:
+    exposure: "C"             # Categoria de exposicion
+    importance: 1.0           # Factor de importancia
+    velocity_pressure: 1.0    # kPa (ajustar segun ubicacion)
+
+  seismic_load:
+    site_class: "D"
+    importance: 1.0
+    Sds: 0.5                  # Ajustar segun ubicacion
+    Sd1: 0.3
+
+  thermal:
+    design_temp_high: 150     # °C
+    design_temp_low: -20      # °C
+    reference_temp: 21        # °C
+
+# Cargas de tuberia por tamano (kg/m)
+pipe_loads:
+  # NPS: {empty, water_filled, steam, insulated_empty, insulated_water}
+  2: {empty: 5.4, water: 8.2, steam: 5.4, ins_empty: 8.5, ins_water: 11.3}
+  3: {empty: 11.3, water: 18.4, steam: 11.3, ins_empty: 15.8, ins_water: 22.9}
+  4: {empty: 16.1, water: 28.3, steam: 16.1, ins_empty: 21.6, ins_water: 33.8}
+  6: {empty: 28.3, water: 56.7, steam: 28.3, ins_empty: 36.3, ins_water: 64.7}
+  8: {empty: 43.8, water: 94.6, steam: 43.8, ins_empty: 54.3, ins_water: 105.1}
+  10: {empty: 60.3, water: 140.2, steam: 60.3, ins_empty: 73.3, ins_water: 153.2}
+  12: {empty: 77.0, water: 190.0, steam: 77.0, ins_empty: 92.5, ins_water: 205.5}
+  14: {empty: 106.0, water: 261.0, steam: 106.0, ins_empty: 124.0, ins_water: 279.0}
+  16: {empty: 136.0, water: 349.0, steam: 136.0, ins_empty: 157.0, ins_water: 370.0}
+  18: {empty: 170.0, water: 453.0, steam: 170.0, ins_empty: 194.0, ins_water: 477.0}
+  20: {empty: 206.0, water: 571.0, steam: 206.0, ins_empty: 233.0, ins_water: 598.0}
+  24: {empty: 283.0, water: 844.0, steam: 283.0, ins_empty: 316.0, ins_water: 877.0}
+
+# Espaciamiento de soportes por tamano de tuberia (mm)
+support_spacing:
+  # NPS: {max_spacing_empty, max_spacing_water, max_spacing_steam}
+  2: {empty: 3000, water: 2400, steam: 2700}
+  3: {empty: 3600, water: 3000, steam: 3300}
+  4: {empty: 4200, water: 3600, steam: 3900}
+  6: {empty: 5100, water: 4200, steam: 4800}
+  8: {empty: 5800, water: 4800, steam: 5400}
+  10: {empty: 6400, water: 5200, steam: 6000}
+  12: {empty: 7000, water: 5800, steam: 6600}
+  14: {empty: 7300, water: 6000, steam: 6900}
+  16: {empty: 7600, water: 6200, steam: 7200}
+  18: {empty: 7900, water: 6400, steam: 7500}
+  20: {empty: 8200, water: 6600, steam: 7800}
+  24: {empty: 8800, water: 7000, steam: 8400}
+
+# Restricciones
+constraints:
+  geometry:
+    min_bay_spacing: 3000
+    max_bay_spacing: 12000
+    min_width: 1500
+    max_width: 8000
+    min_height: 3000
+    max_height: 15000
+    min_tier_spacing: 600
+    max_tier_spacing: 2000
+
+  structural:
+    max_deflection_ratio: 240     # L/240
+    max_column_slenderness: 200   # Kl/r
+    max_beam_slenderness: 240
+    min_column_splice_height: 1500
+
+  access:
+    walkway_min_width: 750
+    walkway_max_step: 250
+    handrail_height: 1070
+    kickplate_height: 100
+    ladder_width: 450
+    ladder_spacing: 300
+
+# Costos (MXN)
+costs:
+  structure:
+    steel_per_kg: 28              # A36
+    fabrication_per_kg: 18
+    erection_per_kg: 12
+    galvanize_per_kg: 15
+    paint_per_m2: 280
+
+  supports:
+    shoe_small: 450               # ≤4"
+    shoe_medium: 650              # 6-8"
+    shoe_large: 950               # ≥10"
+    guide_factor: 1.4
+    anchor_factor: 1.8
+    hanger_factor: 1.6
+    spring_variable: 2500
+    spring_constant: 4500
+
+  cable_tray:
+    ladder_per_m: 850
+    solid_per_m: 1200
+    mesh_per_m: 650
+    fittings_factor: 0.25         # 25% de bandeja
+
+  installation:
+    crew_rate_per_day: 12000      # Cuadrilla
+    crane_per_day: 15000
+    equipment_per_day: 5000
+
+# Parametros BIM
+bim:
+  shared_parameters:
+    - name: "BIMAC_Rack_Type"
+      type: "Text"
+      group: "Identity Data"
+    - name: "BIMAC_Rack_Length"
+      type: "Length"
+      group: "Dimensions"
+    - name: "BIMAC_Rack_Width"
+      type: "Length"
+      group: "Dimensions"
+    - name: "BIMAC_Rack_Height"
+      type: "Length"
+      group: "Dimensions"
+    - name: "BIMAC_Rack_TierCount"
+      type: "Integer"
+      group: "Dimensions"
+    - name: "BIMAC_Rack_Capacity"
+      type: "Number"
+      group: "Structural"
+    - name: "BIMAC_Rack_Weight"
+      type: "Number"
+      group: "Structural"
+
+  classification:
+    uniclass: "Ss_25_60_65"       # Pipe support systems
+    omniclass: "23-33 11 00"      # Pipe Racks
+    ifc_class: "IfcBuildingElementProxy"
+    ifc_type: "PIPE_RACK"
+
+# Exportacion
+export:
+  revit:
+    category: "Structural Framing"
+    subcategory: "Pipe Rack"
+    use_adaptive: false
+    schedule_name: "BIMAC_PipeRack_Schedule"
+
+  ifc:
+    version: "IFC4"
+    decompose_to_members: true
+    property_sets:
+      - "Pset_StructuralMemberCommon"
+      - "BIMAC_PipeRackProperties"

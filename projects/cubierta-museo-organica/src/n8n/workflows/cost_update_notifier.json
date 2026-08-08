@@ -1,0 +1,269 @@
+{
+  "name": "Cubierta Museo - Cost Update Notifier",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "cubierta-cost-update",
+        "responseMode": "lastNode",
+        "options": {
+          "rawBody": false
+        }
+      },
+      "id": "webhook-1",
+      "name": "Webhook - Cost Update",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "webhookId": "cubierta-cost-001"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Procesar datos de costos recibidos desde Grasshopper\nconst data = $input.first().json;\n\n// Configuración\nconst BUDGET = 280000;\nconst WARNING_THRESHOLD = 0.90; // 90% del presupuesto\n\n// Calcular métricas\nconst totalCost = data.total_cost || 0;\nconst isOverBudget = totalCost > BUDGET;\nconst isWarning = totalCost > (BUDGET * WARNING_THRESHOLD);\nconst margin = BUDGET - totalCost;\nconst marginPercent = (margin / BUDGET * 100).toFixed(1);\nconst usagePercent = (totalCost / BUDGET * 100).toFixed(1);\n\n// Determinar estado\nlet status = 'OK';\nlet statusEmoji = '✅';\nif (isOverBudget) {\n  status = 'OVER_BUDGET';\n  statusEmoji = '🚨';\n} else if (isWarning) {\n  status = 'WARNING';\n  statusEmoji = '⚠️';\n}\n\n// Formatear moneda\nconst formatCurrency = (amount) => {\n  return new Intl.NumberFormat('es-MX', {\n    style: 'currency',\n    currency: 'MXN'\n  }).format(amount);\n};\n\n// Preparar datos de paneles\nconst panels = data.panels || {};\nconst panelSummary = {\n  flat: panels.flat?.quantity || 0,\n  singleCurve: panels.single_curve?.quantity || 0,\n  doubleCurve: panels.double_curve?.quantity || 0,\n  total: (panels.flat?.quantity || 0) + \n         (panels.single_curve?.quantity || 0) + \n         (panels.double_curve?.quantity || 0)\n};\n\nreturn [{\n  json: {\n    // Datos originales\n    ...data,\n    \n    // Métricas calculadas\n    budget: BUDGET,\n    totalCost,\n    margin,\n    marginPercent: parseFloat(marginPercent),\n    usagePercent: parseFloat(usagePercent),\n    isOverBudget,\n    isWarning,\n    status,\n    statusEmoji,\n    \n    // Resumen de paneles\n    panelSummary,\n    \n    // Formateados para display\n    formatted: {\n      totalCost: formatCurrency(totalCost),\n      budget: formatCurrency(BUDGET),\n      margin: formatCurrency(margin),\n      timestamp: new Date().toISOString()\n    }\n  }\n}];"
+      },
+      "id": "code-1",
+      "name": "Process Cost Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "OVER_BUDGET",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-1",
+      "name": "Check if Over Budget",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "application": {
+          "__rl": true,
+          "value": "{{ $env.AIRTABLE_BASE_ID }}",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "CostHistory",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $json.formatted.timestamp }}",
+            "TotalCost": "={{ $json.totalCost }}",
+            "Budget": "={{ $json.budget }}",
+            "MarginPercent": "={{ $json.marginPercent }}",
+            "Status": "={{ $json.status }}",
+            "PanelsFlat": "={{ $json.panelSummary.flat }}",
+            "PanelsSingleCurve": "={{ $json.panelSummary.singleCurve }}",
+            "PanelsDoubleCurve": "={{ $json.panelSummary.doubleCurve }}",
+            "PanelsTotal": "={{ $json.panelSummary.total }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "airtable-1",
+      "name": "Log to Airtable",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "channel": "#bim-alerts",
+        "text": "={{ $json.statusEmoji }} *Cubierta Museo - Actualización de Costos*\n\n*Estado:* {{ $json.status }}\n*Costo Total:* {{ $json.formatted.totalCost }}\n*Presupuesto:* {{ $json.formatted.budget }}\n*Margen:* {{ $json.formatted.margin }} ({{ $json.marginPercent }}%)\n\n*Paneles:*\n• Planos: {{ $json.panelSummary.flat }}\n• Curvatura Simple: {{ $json.panelSummary.singleCurve }}\n• Doble Curvatura: {{ $json.panelSummary.doubleCurve }}\n• Total: {{ $json.panelSummary.total }}\n\n_Actualizado: {{ $json.formatted.timestamp }}_",
+        "otherOptions": {}
+      },
+      "id": "slack-1",
+      "name": "Send Slack Alert",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [900, 400]
+    },
+    {
+      "parameters": {
+        "channel": "#bim-alerts",
+        "text": "🚨 *ALERTA: PRESUPUESTO EXCEDIDO*\n\n*Proyecto:* Cubierta Museo Orgánica\n*Costo Actual:* {{ $json.formatted.totalCost }}\n*Presupuesto:* {{ $json.formatted.budget }}\n*Exceso:* {{ $json.formatted.margin }}\n\n⚠️ *Se requiere acción inmediata*\n\nOpciones de optimización:\n1. Aumentar tolerancia de planarización\n2. Reducir cantidad de paneles doble curvatura\n3. Cambiar material a alternativa más económica\n\ncc: @bim-team",
+        "otherOptions": {
+          "mrkdwn": true
+        }
+      },
+      "id": "slack-2",
+      "name": "Send Critical Alert",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [1100, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, message: 'Cost update processed', status: $json.status, margin: $json.marginPercent }) }}",
+        "options": {}
+      },
+      "id": "respond-1",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1320, 300]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "application": {
+          "__rl": true,
+          "value": "{{ $env.AIRTABLE_BASE_ID }}",
+          "mode": "id"
+        },
+        "table": {
+          "__rl": true,
+          "value": "CostHistory",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $json.formatted.timestamp }}",
+            "TotalCost": "={{ $json.totalCost }}",
+            "Budget": "={{ $json.budget }}",
+            "MarginPercent": "={{ $json.marginPercent }}",
+            "Status": "={{ $json.status }}",
+            "PanelsFlat": "={{ $json.panelSummary.flat }}",
+            "PanelsSingleCurve": "={{ $json.panelSummary.singleCurve }}",
+            "PanelsDoubleCurve": "={{ $json.panelSummary.doubleCurve }}",
+            "PanelsTotal": "={{ $json.panelSummary.total }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "airtable-2",
+      "name": "Log Alert to Airtable",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2,
+      "position": [1100, 180]
+    }
+  ],
+  "connections": {
+    "Webhook - Cost Update": {
+      "main": [
+        [
+          {
+            "node": "Process Cost Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Cost Data": {
+      "main": [
+        [
+          {
+            "node": "Check if Over Budget",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Over Budget": {
+      "main": [
+        [
+          {
+            "node": "Log Alert to Airtable",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Critical Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log to Airtable",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Slack Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log to Airtable": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Slack Alert": {
+      "main": [
+        []
+      ]
+    },
+    "Send Critical Alert": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Alert to Airtable": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "BIM",
+      "createdAt": "2025-12-27T00:00:00.000Z",
+      "updatedAt": "2025-12-27T00:00:00.000Z"
+    },
+    {
+      "name": "Cubierta",
+      "createdAt": "2025-12-27T00:00:00.000Z",
+      "updatedAt": "2025-12-27T00:00:00.000Z"
+    }
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-12-27T00:00:00.000Z",
+  "versionId": "1"
+}

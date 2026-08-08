@@ -1,0 +1,501 @@
+# E03 - Conexion Viga-Columna Parametrica
+# Configuracion del componente
+
+component:
+  id: "E03"
+  name: "Conexion Viga-Columna Parametrica"
+  category: "estructura"
+  version: "1.0.0"
+  author: "BIMAC"
+  created: "2025-12-27"
+  status: "development"
+
+# Parametros por defecto
+defaults:
+  beam:
+    profile: "W18x50"
+    material: "A992"
+    length: 6000               # mm (para calculo de momento)
+
+  column:
+    profile: "W14x90"
+    material: "A992"
+    story_height: 3600         # mm
+
+  connection:
+    type: "shear_tab"
+    seismic_category: "none"   # none, OMF, IMF, SMF
+    connection_side: "one_side"
+    field_welded: true
+    shop_welded: true
+
+  bolts:
+    diameter: 22               # mm (M22)
+    grade: "A325"
+    type: "bearing"            # bearing, slip_critical
+    hole_type: "standard"
+    threads_included: true
+
+  welds:
+    electrode: "E70"
+    flange_weld: "CJP"
+    web_weld: "fillet"
+    backing_bar: true
+    weld_access_hole: true
+
+  plates:
+    material: "A36"
+    shear_tab_thickness: 10    # mm
+    end_plate_thickness: 25    # mm
+    stiffener_thickness: 12    # mm
+
+# Tipologias de conexion
+connection_types:
+  # === CONEXIONES DE CORTE ===
+  shear_tab:
+    name: "Shear Tab (Single Plate)"
+    category: "shear"
+    description: "Placa simple soldada a columna, atornillada a viga"
+    capacity_type: "shear_only"
+    typical_use: "marcos de gravedad"
+    components:
+      - shear_plate
+      - bolts
+      - fillet_weld
+    design_reference: "AISC Manual Part 10"
+
+  clip_angle:
+    name: "Clip Angle"
+    category: "shear"
+    description: "Angulos dobles conectando alma de viga a columna"
+    capacity_type: "shear_only"
+    typical_use: "conexiones ligeras"
+    components:
+      - angles
+      - bolts
+    design_reference: "AISC Manual Part 10"
+
+  double_angle:
+    name: "Double Angle"
+    category: "shear"
+    description: "Angulos dobles en alma"
+    capacity_type: "shear_only"
+    typical_use: "conexiones de gravedad"
+    components:
+      - angles
+      - bolts
+      - fillet_weld
+    design_reference: "AISC Manual Part 10"
+
+  seated_beam:
+    name: "Seated Beam"
+    category: "shear"
+    description: "Viga apoyada en angulo o placa"
+    capacity_type: "shear_only"
+    typical_use: "conexiones de erección facil"
+    components:
+      - seat_angle
+      - top_angle
+      - bolts
+      - fillet_weld
+    design_reference: "AISC Manual Part 10"
+
+  # === CONEXIONES DE MOMENTO ===
+  end_plate:
+    name: "End Plate (Flush)"
+    category: "moment"
+    description: "Placa de extremo al ras con patines"
+    capacity_type: "moment_and_shear"
+    typical_use: "marcos rigidos"
+    components:
+      - end_plate
+      - bolts
+      - stiffeners
+      - CJP_weld
+    design_reference: "AISC Design Guide 4"
+
+  extended_end_plate:
+    name: "Extended End Plate"
+    category: "moment"
+    description: "Placa de extremo extendida arriba y/o abajo"
+    capacity_type: "moment_and_shear"
+    typical_use: "marcos rigidos, SMF"
+    seismic_prequalified: true
+    components:
+      - extended_end_plate
+      - bolts
+      - stiffeners
+      - continuity_plates
+      - CJP_weld
+    design_reference: "AISC 358 Chapter 6"
+
+  flange_plate:
+    name: "Flange Plate (Directly Welded)"
+    category: "moment"
+    description: "Patines soldados directamente a columna"
+    capacity_type: "moment_and_shear"
+    typical_use: "marcos de momento"
+    components:
+      - flange_plates
+      - shear_plate
+      - CJP_weld
+      - fillet_weld
+      - stiffeners
+    design_reference: "AISC Manual Part 12"
+
+  bolted_flange_plate:
+    name: "Bolted Flange Plate (BFP)"
+    category: "moment"
+    description: "Placas de patin atornilladas"
+    capacity_type: "moment_and_shear"
+    typical_use: "conexiones de campo"
+    seismic_prequalified: true
+    components:
+      - flange_plates
+      - shear_plate
+      - bolts
+      - CJP_weld
+    design_reference: "AISC 358 Chapter 7"
+
+  # === CONEXIONES SISMICAS ===
+  reduced_beam_section:
+    name: "Reduced Beam Section (RBS)"
+    category: "moment_seismic"
+    description: "Seccion reducida en patines para plastificacion"
+    capacity_type: "moment_and_shear"
+    typical_use: "SMF sismico"
+    seismic_prequalified: true
+    frame_types: ["SMF", "IMF"]
+    components:
+      - RBS_cut
+      - shear_plate
+      - CJP_weld
+      - stiffeners
+      - continuity_plates
+    design_reference: "AISC 358 Chapter 5"
+
+  wuf_w:
+    name: "Welded Unreinforced Flange - Welded Web (WUF-W)"
+    category: "moment_seismic"
+    description: "Patines y alma soldados, post-Northridge"
+    capacity_type: "moment_and_shear"
+    typical_use: "SMF, IMF sismico"
+    seismic_prequalified: true
+    frame_types: ["SMF", "IMF"]
+    components:
+      - CJP_weld_flange
+      - CJP_weld_web
+      - stiffeners
+      - continuity_plates
+      - weld_access_holes
+    design_reference: "AISC 358 Chapter 8"
+
+  kaiser_bolted_bracket:
+    name: "Kaiser Bolted Bracket (KBB)"
+    category: "moment_seismic"
+    description: "Bracket propietario atornillado"
+    capacity_type: "moment_and_shear"
+    typical_use: "SMF sismico, retrofit"
+    seismic_prequalified: true
+    proprietary: true
+    design_reference: "AISC 358 Chapter 10"
+
+  simpson_strong_frame:
+    name: "Simpson Strong-Frame"
+    category: "moment_seismic"
+    description: "Sistema propietario de marco momento"
+    capacity_type: "moment_and_shear"
+    typical_use: "SMF sismico"
+    seismic_prequalified: true
+    proprietary: true
+    design_reference: "AISC 358 Chapter 11"
+
+# Perfiles de viga disponibles
+beam_profiles:
+  W_shapes:
+    - {name: "W12x26", d: 310, bf: 165, tf: 9.7, tw: 6.4, Zx: 402}
+    - {name: "W14x30", d: 352, bf: 171, tf: 9.8, tw: 6.9, Zx: 542}
+    - {name: "W16x36", d: 403, bf: 178, tf: 10.9, tw: 7.5, Zx: 764}
+    - {name: "W18x50", d: 457, bf: 190, tf: 14.5, tw: 9.0, Zx: 1130}
+    - {name: "W21x62", d: 533, bf: 209, tf: 15.6, tw: 10.2, Zx: 1670}
+    - {name: "W24x76", d: 607, bf: 229, tf: 17.3, tw: 11.2, Zx: 2400}
+    - {name: "W27x94", d: 684, bf: 254, tf: 19.0, tw: 12.4, Zx: 3410}
+    - {name: "W30x116", d: 762, bf: 267, tf: 21.6, tw: 14.0, Zx: 4630}
+    - {name: "W33x130", d: 841, bf: 292, tf: 21.7, tw: 14.0, Zx: 5630}
+    - {name: "W36x150", d: 912, bf: 305, tf: 23.9, tw: 15.9, Zx: 7100}
+
+# Perfiles de columna disponibles
+column_profiles:
+  W_shapes:
+    - {name: "W10x49", d: 254, bf: 254, tf: 14.2, tw: 8.6, Zx: 717}
+    - {name: "W12x65", d: 308, bf: 305, tf: 15.4, tw: 9.9, Zx: 1060}
+    - {name: "W14x90", d: 356, bf: 368, tf: 18.0, tw: 11.2, Zx: 1590}
+    - {name: "W14x132", d: 373, bf: 373, tf: 26.2, tw: 16.4, Zx: 2420}
+    - {name: "W14x176", d: 394, bf: 399, tf: 33.3, tw: 21.1, Zx: 3360}
+    - {name: "W14x257", d: 417, bf: 406, tf: 48.0, tw: 30.0, Zx: 5050}
+    - {name: "W14x370", d: 455, bf: 419, tf: 67.6, tw: 42.2, Zx: 7520}
+    - {name: "W14x500", d: 498, bf: 432, tf: 88.9, tw: 55.6, Zx: 10400}
+
+# Materiales
+materials:
+  structural:
+    A36:
+      name: "ASTM A36"
+      Fy: 250                  # MPa
+      Fu: 400                  # MPa
+      use: "placas, angulos"
+
+    A572_Gr50:
+      name: "ASTM A572 Gr 50"
+      Fy: 345                  # MPa
+      Fu: 450                  # MPa
+      use: "perfiles laminados"
+
+    A992:
+      name: "ASTM A992"
+      Fy: 345                  # MPa
+      Fu: 450                  # MPa
+      use: "vigas W, columnas W"
+
+    A500_Gr_B:
+      name: "ASTM A500 Gr B"
+      Fy: 290                  # MPa
+      Fu: 400                  # MPa
+      use: "HSS"
+
+  bolts:
+    A325:
+      name: "ASTM A325"
+      Fnt: 620                 # MPa (tension nominal)
+      Fnv: 372                 # MPa (corte, N threads)
+      Fnv_X: 457               # MPa (corte, X threads excluded)
+
+    A490:
+      name: "ASTM A490"
+      Fnt: 780                 # MPa
+      Fnv: 457                 # MPa (N)
+      Fnv_X: 579               # MPa (X)
+
+  welds:
+    E70:
+      name: "E70XX"
+      Fexx: 482                # MPa (70 ksi)
+      use: "soldadura estandar"
+
+    E80:
+      name: "E80XX"
+      Fexx: 551                # MPa (80 ksi)
+      use: "alta resistencia"
+
+# Tornillos disponibles
+bolts:
+  diameters: [16, 20, 22, 24, 27, 30, 36]  # mm
+
+  dimensions:
+    16: {Ab: 201, head_height: 10, nut_height: 13}
+    20: {Ab: 314, head_height: 13, nut_height: 16}
+    22: {Ab: 380, head_height: 14, nut_height: 18}
+    24: {Ab: 452, head_height: 15, nut_height: 19}
+    27: {Ab: 573, head_height: 17, nut_height: 22}
+    30: {Ab: 707, head_height: 19, nut_height: 24}
+    36: {Ab: 1018, head_height: 23, nut_height: 29}
+
+  hole_sizes:
+    # diameter: {standard, oversize, short_slot, long_slot}
+    16: {std: 17, ovs: 20, ssl: "17x22", lsl: "17x40"}
+    20: {std: 22, ovs: 24, ssl: "22x26", lsl: "22x50"}
+    22: {std: 24, ovs: 28, ssl: "24x30", lsl: "24x55"}
+    24: {std: 26, ovs: 30, ssl: "26x32", lsl: "26x60"}
+    27: {std: 30, ovs: 35, ssl: "30x37", lsl: "30x67"}
+    30: {std: 33, ovs: 38, ssl: "33x40", lsl: "33x75"}
+
+  edge_distance:
+    # Min edge distance (mm) based on bolt diameter
+    16: 28
+    20: 34
+    22: 38
+    24: 42
+    27: 48
+    30: 52
+
+  spacing:
+    min_factor: 2.67           # Min spacing = 2.67 * d
+    max_factor: 24             # Max spacing = 24 * t (plate thickness)
+    preferred_factor: 3        # Preferred = 3 * d
+
+# Soldaduras
+welds:
+  types:
+    fillet:
+      name: "Filete"
+      symbol: "F"
+      min_size: 3              # mm
+      max_size_factor: 0.707   # of thinner plate
+
+    CJP:
+      name: "Complete Joint Penetration"
+      symbol: "CJP"
+      description: "Penetracion completa"
+      requires_backing: true
+      NDT_required: true
+
+    PJP:
+      name: "Partial Joint Penetration"
+      symbol: "PJP"
+      description: "Penetracion parcial"
+      effective_throat_factor: 0.5
+
+  minimum_fillet_size:
+    # Based on thicker plate (mm)
+    "<=6": 3
+    "6-13": 5
+    "13-19": 6
+    ">19": 8
+
+  access_holes:
+    required_for: ["CJP", "some_PJP"]
+    length_min: 38             # mm (1.5")
+    height_min: 25             # mm (1")
+    radius: 10                 # mm
+
+# Rigidizadores
+stiffeners:
+  types:
+    continuity_plate:
+      name: "Placa de Continuidad"
+      description: "Alineada con patines de viga"
+      purpose: "transfer_flange_force"
+      typical_thickness: "beam_tf"
+
+    transverse_stiffener:
+      name: "Rigidizador Transversal"
+      description: "En alma de columna"
+      purpose: "web_local_yielding"
+      typical_thickness: "0.5 * column_tw"
+
+    doubler_plate:
+      name: "Placa de Refuerzo"
+      description: "Refuerzo de panel zone"
+      purpose: "panel_zone_shear"
+      welded_to: "column_web"
+
+  requirements:
+    width_min: "bf_beam/3 - tw_col/2"
+    thickness_min: "tf_beam/2"
+    corner_clip: 25            # mm
+
+# Verificaciones requeridas
+checks:
+  bolt_checks:
+    - "tension_rupture"
+    - "shear_rupture"
+    - "combined_tension_shear"
+    - "bearing"
+    - "tearout"
+    - "block_shear"
+
+  weld_checks:
+    - "base_metal"
+    - "weld_metal"
+    - "effective_area"
+
+  plate_checks:
+    - "gross_yielding"
+    - "net_rupture"
+    - "block_shear"
+    - "flexural_yielding"
+    - "shear_yielding"
+    - "shear_rupture"
+
+  column_checks:
+    - "flange_local_bending"
+    - "web_local_yielding"
+    - "web_local_crippling"
+    - "web_compression_buckling"
+    - "web_panel_zone_shear"
+
+  seismic_checks:
+    - "strong_column_weak_beam"
+    - "panel_zone_strength"
+    - "continuity_plate_required"
+    - "doubler_plate_required"
+
+# Costos (MXN)
+costs:
+  materials:
+    plate_A36_per_kg: 32
+    plate_A572_per_kg: 38
+    angle_per_kg: 30
+    bolt_A325_each: 45
+    bolt_A490_each: 65
+    nut_each: 12
+    washer_each: 8
+
+  fabrication:
+    cutting_per_kg: 8
+    drilling_per_hole: 35
+    welding_fillet_per_m: 180
+    welding_CJP_per_m: 450
+    welding_PJP_per_m: 320
+    grinding_per_m: 85
+    fitting_per_connection: 350
+
+  finishing:
+    primer_per_m2: 150
+    paint_per_m2: 280
+    galvanize_per_kg: 15
+
+  installation:
+    erection_per_connection: 850
+    torque_per_bolt: 25
+    field_weld_factor: 1.5     # Multiplicador vs taller
+
+# Parametros BIM
+bim:
+  shared_parameters:
+    - name: "BIMAC_Connection_Type"
+      type: "Text"
+      group: "Identity Data"
+    - name: "BIMAC_Connection_Side"
+      type: "Text"
+      group: "Identity Data"
+    - name: "BIMAC_Connection_Capacity_Shear"
+      type: "Number"
+      group: "Structural"
+    - name: "BIMAC_Connection_Capacity_Moment"
+      type: "Number"
+      group: "Structural"
+    - name: "BIMAC_Connection_DCR"
+      type: "Number"
+      group: "Structural"
+    - name: "BIMAC_Bolt_Count"
+      type: "Integer"
+      group: "Structural"
+    - name: "BIMAC_Bolt_Size"
+      type: "Text"
+      group: "Structural"
+    - name: "BIMAC_Weld_Size"
+      type: "Number"
+      group: "Structural"
+
+  classification:
+    uniclass: "Ss_25_20_15"
+    omniclass: "23-17 11 11"
+    ifc_class: "IfcFastener"
+
+# Exportacion
+export:
+  revit:
+    category: "Structural Connections"
+    family_template: "Metric Structural Connection.rft"
+    nested_families: true
+
+  ifc:
+    version: "IFC4"
+    property_sets:
+      - "Pset_FastenerCommon"
+      - "BIMAC_ConnectionProperties"
+
+  tekla:
+    component_type: "connection"
+    macro_export: true

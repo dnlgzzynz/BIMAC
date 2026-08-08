@@ -1,0 +1,171 @@
+# =============================================================================
+# CONFIGURACIÓN DE COSTOS - CUBIERTAS PARAMÉTRICAS BIMAC
+# =============================================================================
+# Este archivo define los costos por tipo de panel y material.
+# Todos los costos están en MXN/m²
+#
+# Para agregar un nuevo material:
+# 1. Agregar entrada bajo 'panels' con costos para flat, single_curve, double_curve
+# 2. Agregar descripción en 'materials_info'
+# =============================================================================
+
+# Costos por tipo de panel (MXN/m²)
+panels:
+  # Policarbonato celular - Estándar
+  polycarbonate_16mm:
+    flat: 450
+    single_curve: 680
+    double_curve: 1250
+
+  polycarbonate_10mm:
+    flat: 380
+    single_curve: 580
+    double_curve: 1100
+
+  polycarbonate_25mm:
+    flat: 620
+    single_curve: 850
+    double_curve: 1450
+
+  # Policarbonato sólido
+  polycarbonate_solid_6mm:
+    flat: 550
+    single_curve: 780
+    double_curve: 1350
+
+  # Vidrio
+  glass_laminated_6mm:
+    flat: 1200
+    single_curve: 1800
+    double_curve: 2500
+
+  glass_tempered_10mm:
+    flat: 950
+    single_curve: 1500
+    double_curve: 2200
+
+  glass_curved:
+    flat: 1400
+    single_curve: 2100
+    double_curve: 3200
+
+  # ETFE (Ethylene Tetrafluoroethylene)
+  etfe_single:
+    flat: 800
+    single_curve: 1100
+    double_curve: 1500
+
+  etfe_cushion:
+    flat: 1200
+    single_curve: 1600
+    double_curve: 2100
+
+  # Metal
+  metal_composite_4mm:
+    flat: 350
+    single_curve: 550
+    double_curve: 950
+
+  metal_perforated:
+    flat: 450
+    single_curve: 680
+    double_curve: 1100
+
+  zinc_standing_seam:
+    flat: 580
+    single_curve: 850
+    double_curve: 1300
+
+  # Textil
+  textile_ptfe:
+    flat: 650
+    single_curve: 850
+    double_curve: 1200
+
+  textile_pvc:
+    flat: 380
+    single_curve: 520
+    double_curve: 780
+
+  # Madera
+  wood_laminated_glulam:
+    flat: 1800
+    single_curve: 2500
+    double_curve: 3800
+
+# Factores adicionales (porcentaje sobre costo base)
+factors:
+  structure: 0.25        # 25% - Estructura metálica de soporte
+  installation: 0.15     # 15% - Instalación y mano de obra
+  contingency: 0.10      # 10% - Imprevistos y ajustes
+  transport: 0.05        # 5% - Transporte (no incluido por defecto)
+  design: 0.08           # 8% - Diseño y coordinación (no incluido por defecto)
+
+# Factores por tipo de cubierta
+factors_by_type:
+  organic:
+    structure: 0.25
+    installation: 0.15
+    contingency: 0.10
+  tensile:
+    structure: 0.35      # Mayor porque incluye cables y anclajes
+    installation: 0.20
+    contingency: 0.12
+  gridshell:
+    structure: 0.40      # Mayor por complejidad de nodos
+    installation: 0.18
+    contingency: 0.12
+  folded:
+    structure: 0.20
+    installation: 0.12
+    contingency: 0.08
+  shell:
+    structure: 0.30
+    installation: 0.15
+    contingency: 0.10
+
+# Descuentos por volumen
+volume_discounts:
+  - min_area: 200
+    discount: 0.03       # 3% para > 200 m²
+  - min_area: 500
+    discount: 0.05       # 5% para > 500 m²
+  - min_area: 1000
+    discount: 0.10       # 10% para > 1000 m²
+  - min_area: 2000
+    discount: 0.15       # 15% para > 2000 m²
+  - min_area: 5000
+    discount: 0.20       # 20% para > 5000 m²
+
+# Información de materiales (para documentación)
+materials_info:
+  polycarbonate_16mm:
+    name: "Policarbonato Celular 16mm"
+    u_value: 2.3         # W/m²K
+    transmittance: 0.65  # 65%
+    weight: 2.7          # kg/m²
+    fire_rating: "B-s1,d0"
+    warranty_years: 10
+
+  glass_laminated_6mm:
+    name: "Vidrio Laminado 6mm"
+    u_value: 5.8
+    transmittance: 0.80
+    weight: 15.0
+    fire_rating: "A1"
+    warranty_years: 15
+
+  etfe_single:
+    name: "ETFE Simple Capa"
+    u_value: 5.0
+    transmittance: 0.95
+    weight: 0.35
+    fire_rating: "B-s1,d0"
+    warranty_years: 25
+
+# Configuración de moneda
+currency:
+  code: "MXN"
+  symbol: "$"
+  decimal_places: 2
+  thousands_separator: ","

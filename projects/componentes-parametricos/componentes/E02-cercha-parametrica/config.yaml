@@ -1,0 +1,451 @@
+# E02 - Cercha Parametrica
+# Configuracion del componente
+
+component:
+  id: "E02"
+  name: "Cercha Parametrica"
+  category: "estructuras"
+  version: "1.0.0"
+  author: "BIMAC"
+  created: "2025-12-27"
+  status: "development"
+
+# Parametros por defecto
+defaults:
+  geometry:
+    span: 12000              # mm
+    height: 2000             # mm (auto = span/6)
+    slope: 15                # grados
+    bay_count: 8             # numero de modulos
+    overhang: 0              # mm - volado en extremos
+
+  truss_type: "pratt"        # Tipologia por defecto
+
+  profiles:
+    top_chord: "HSS_150x150x6"
+    bottom_chord: "HSS_150x150x6"
+    web_diagonal: "HSS_100x100x4"
+    web_vertical: "HSS_75x75x3"
+    material: "A500_Gr_B"
+
+  connections:
+    type: "welded"           # welded | bolted | pinned
+    gusset_plate: true
+    gusset_thickness: 12     # mm
+    gusset_material: "A36"
+    weld_size: 6             # mm (filete)
+    bolt_diameter: 20        # mm (si es atornillada)
+    bolt_grade: "A325"
+
+  supports:
+    left: "pinned"           # pinned | fixed | roller
+    right: "roller"          # pinned | fixed | roller
+
+# Tipologias disponibles
+truss_types:
+  # Cerchas triangulares
+  fink:
+    name: "Fink"
+    description: "Diagonales en patron W"
+    category: "triangular"
+    min_span: 6000
+    max_span: 15000
+    optimal_ratio: 0.20      # altura/luz
+    diagonal_pattern: "W"
+
+  howe:
+    name: "Howe"
+    description: "Verticales en compresion, diagonales en tension"
+    category: "triangular"
+    min_span: 8000
+    max_span: 25000
+    optimal_ratio: 0.15
+    diagonal_direction: "outward"
+
+  pratt:
+    name: "Pratt"
+    description: "Verticales en tension, diagonales en compresion"
+    category: "triangular"
+    min_span: 8000
+    max_span: 30000
+    optimal_ratio: 0.12
+    diagonal_direction: "inward"
+
+  warren:
+    name: "Warren"
+    description: "Solo diagonales alternadas"
+    category: "triangular"
+    min_span: 10000
+    max_span: 50000
+    optimal_ratio: 0.10
+    has_verticals: false
+
+  warren_vertical:
+    name: "Warren con Verticales"
+    description: "Warren con montantes verticales"
+    category: "triangular"
+    min_span: 10000
+    max_span: 50000
+    optimal_ratio: 0.10
+    has_verticals: true
+
+  scissors:
+    name: "Scissors"
+    description: "Cuerdas cruzadas para altura interior"
+    category: "triangular"
+    min_span: 8000
+    max_span: 18000
+    optimal_ratio: 0.25
+    interior_height_gain: 0.6
+
+  fan:
+    name: "Fan"
+    description: "Diagonales radiales desde apoyos"
+    category: "triangular"
+    min_span: 6000
+    max_span: 15000
+    optimal_ratio: 0.18
+
+  # Cerchas paralelas
+  parallel_pratt:
+    name: "Pratt Paralela"
+    description: "Cuerdas paralelas, diagonales al centro"
+    category: "parallel"
+    min_span: 15000
+    max_span: 60000
+    optimal_ratio: 0.08
+    depth_ratio: 0.06        # peralte/luz
+
+  parallel_warren:
+    name: "Warren Paralela"
+    description: "Cuerdas paralelas, diagonales alternas"
+    category: "parallel"
+    min_span: 20000
+    max_span: 80000
+    optimal_ratio: 0.07
+    depth_ratio: 0.05
+
+  vierendeel:
+    name: "Vierendeel"
+    description: "Marco rigido sin diagonales"
+    category: "parallel"
+    min_span: 8000
+    max_span: 25000
+    optimal_ratio: 0.10
+    moment_frame: true
+
+  # Cerchas curvas
+  bowstring:
+    name: "Bowstring"
+    description: "Cuerda superior arqueada"
+    category: "curved"
+    min_span: 20000
+    max_span: 80000
+    optimal_ratio: 0.12
+    curve_type: "parabolic"
+
+  crescent:
+    name: "Crescent"
+    description: "Ambas cuerdas curvas"
+    category: "curved"
+    min_span: 15000
+    max_span: 50000
+    optimal_ratio: 0.15
+    curve_type: "arc"
+
+  lenticular:
+    name: "Lenticular"
+    description: "Forma de lente simetrica"
+    category: "curved"
+    min_span: 30000
+    max_span: 100000
+    optimal_ratio: 0.08
+    symmetric: true
+
+# Perfiles disponibles (seccion, area, inercia, peso)
+profiles:
+  # HSS - Hollow Structural Sections (Rectangulares)
+  HSS_50x50x3:
+    type: "HSS"
+    dimensions: [50, 50, 3]
+    area: 5.41                # cm2
+    Ix: 14.8                  # cm4
+    Iy: 14.8                  # cm4
+    weight: 4.25              # kg/m
+    rx: 1.65                  # cm
+    ry: 1.65                  # cm
+
+  HSS_75x75x3:
+    type: "HSS"
+    dimensions: [75, 75, 3]
+    area: 8.41
+    Ix: 53.2
+    Iy: 53.2
+    weight: 6.60
+    rx: 2.52
+    ry: 2.52
+
+  HSS_100x100x4:
+    type: "HSS"
+    dimensions: [100, 100, 4]
+    area: 14.4
+    Ix: 166
+    Iy: 166
+    weight: 11.3
+    rx: 3.40
+    ry: 3.40
+
+  HSS_100x100x6:
+    type: "HSS"
+    dimensions: [100, 100, 6]
+    area: 20.9
+    Ix: 228
+    Iy: 228
+    weight: 16.4
+    rx: 3.30
+    ry: 3.30
+
+  HSS_150x150x6:
+    type: "HSS"
+    dimensions: [150, 150, 6]
+    area: 32.9
+    Ix: 833
+    Iy: 833
+    weight: 25.8
+    rx: 5.03
+    ry: 5.03
+
+  HSS_150x150x8:
+    type: "HSS"
+    dimensions: [150, 150, 8]
+    area: 42.9
+    Ix: 1050
+    Iy: 1050
+    weight: 33.7
+    rx: 4.95
+    ry: 4.95
+
+  HSS_200x200x8:
+    type: "HSS"
+    dimensions: [200, 200, 8]
+    area: 58.1
+    Ix: 2560
+    Iy: 2560
+    weight: 45.6
+    rx: 6.64
+    ry: 6.64
+
+  HSS_200x200x10:
+    type: "HSS"
+    dimensions: [200, 200, 10]
+    area: 71.4
+    Ix: 3050
+    Iy: 3050
+    weight: 56.1
+    rx: 6.54
+    ry: 6.54
+
+  HSS_250x250x10:
+    type: "HSS"
+    dimensions: [250, 250, 10]
+    area: 90.9
+    Ix: 6180
+    Iy: 6180
+    weight: 71.4
+    rx: 8.25
+    ry: 8.25
+
+  # Angulos
+  L_50x50x5:
+    type: "L"
+    dimensions: [50, 50, 5]
+    area: 4.80
+    Ix: 11.0
+    Iy: 11.0
+    weight: 3.77
+    rx: 1.51
+    ry: 1.51
+
+  L_75x75x6:
+    type: "L"
+    dimensions: [75, 75, 6]
+    area: 8.73
+    Ix: 51.7
+    Iy: 51.7
+    weight: 6.85
+    rx: 2.43
+    ry: 2.43
+
+  L_100x100x8:
+    type: "L"
+    dimensions: [100, 100, 8]
+    area: 15.5
+    Ix: 166
+    Iy: 166
+    weight: 12.2
+    rx: 3.27
+    ry: 3.27
+
+  # Tubos redondos
+  PIPE_60x4:
+    type: "PIPE"
+    dimensions: [60, 4]       # diametro, espesor
+    area: 7.03
+    Ix: 28.3
+    Iy: 28.3
+    weight: 5.52
+    rx: 2.01
+    ry: 2.01
+
+  PIPE_89x5:
+    type: "PIPE"
+    dimensions: [89, 5]
+    area: 13.2
+    Ix: 116
+    Iy: 116
+    weight: 10.4
+    rx: 2.97
+    ry: 2.97
+
+  PIPE_114x6:
+    type: "PIPE"
+    dimensions: [114, 6]
+    area: 20.4
+    Ix: 289
+    Iy: 289
+    weight: 16.0
+    rx: 3.77
+    ry: 3.77
+
+# Materiales
+materials:
+  A36:
+    name: "ASTM A36"
+    Fy: 250                   # MPa
+    Fu: 400                   # MPa
+    E: 200000                 # MPa
+    density: 7850             # kg/m3
+    weldability: "excellent"
+    cost_factor: 1.0
+
+  A572_Gr50:
+    name: "ASTM A572 Gr. 50"
+    Fy: 345                   # MPa
+    Fu: 450                   # MPa
+    E: 200000
+    density: 7850
+    weldability: "good"
+    cost_factor: 1.15
+
+  A500_Gr_B:
+    name: "ASTM A500 Gr. B"
+    Fy: 290                   # MPa
+    Fu: 400                   # MPa
+    E: 200000
+    density: 7850
+    weldability: "excellent"
+    cost_factor: 1.0
+
+  A500_Gr_C:
+    name: "ASTM A500 Gr. C"
+    Fy: 317                   # MPa
+    Fu: 427                   # MPa
+    E: 200000
+    density: 7850
+    weldability: "excellent"
+    cost_factor: 1.05
+
+# Restricciones
+constraints:
+  geometry:
+    min_span: 3000
+    max_span: 100000
+    min_height_ratio: 0.05    # altura/luz minima
+    max_height_ratio: 0.30    # altura/luz maxima
+    min_bay_count: 4
+    max_bay_count: 30
+
+  structural:
+    max_slenderness_chord: 200    # L/r maximo cuerdas
+    max_slenderness_web: 300      # L/r maximo alma
+    min_angle_diagonal: 30        # grados
+    max_angle_diagonal: 60        # grados
+    deflection_limit: 240         # L/240
+
+  connections:
+    min_weld_size: 3              # mm
+    max_weld_size: 16             # mm
+    min_gusset_thickness: 6       # mm
+    max_gusset_thickness: 25      # mm
+    min_bolt_edge_distance: 1.5   # x diametro
+
+# Costos (MXN)
+costs:
+  material:
+    steel_per_kg: 28              # MXN/kg base
+    A36_factor: 1.0
+    A572_factor: 1.15
+    A500_B_factor: 1.0
+    A500_C_factor: 1.05
+
+  fabrication:
+    cutting_per_cut: 45           # MXN/corte
+    welding_per_kg: 18            # MXN/kg
+    drilling_per_hole: 25         # MXN/agujero
+    gusset_plate_per_kg: 35       # MXN/kg
+
+  finishing:
+    sandblast_per_m2: 85          # MXN/m2
+    primer_per_m2: 65             # MXN/m2
+    paint_per_m2: 120             # MXN/m2
+    galvanize_per_kg: 10          # MXN/kg
+
+  installation:
+    assembly_per_kg: 8            # MXN/kg
+    crane_per_day: 15000          # MXN/dia
+    crew_per_day: 8500            # MXN/dia
+
+# Parametros BIM
+bim:
+  shared_parameters:
+    - name: "BIMAC_Truss_Type"
+      type: "Text"
+      group: "Identity Data"
+    - name: "BIMAC_Truss_Span"
+      type: "Length"
+      group: "Dimensions"
+    - name: "BIMAC_Truss_Height"
+      type: "Length"
+      group: "Dimensions"
+    - name: "BIMAC_Truss_Weight"
+      type: "Number"
+      group: "Structural"
+    - name: "BIMAC_Member_Force"
+      type: "Number"
+      group: "Structural"
+    - name: "BIMAC_Member_Utilization"
+      type: "Number"
+      group: "Structural"
+
+  classification:
+    uniclass: "Ss_20_50_80"       # Truss structures
+    omniclass: "23-13 15 11"      # Steel Trusses
+    ifc_class: "IfcElementAssembly"
+    ifc_type: "TRUSS"
+
+# Exportacion
+export:
+  revit:
+    family_category: "Structural Framing"
+    use_adaptive: true
+    schedule_name: "BIMAC_Truss_Schedule"
+
+  ifc:
+    version: "IFC4"
+    property_sets:
+      - "Pset_BeamCommon"
+      - "BIMAC_TrussProperties"
+
+  tekla:
+    export_format: "IFC"
+    include_connections: true

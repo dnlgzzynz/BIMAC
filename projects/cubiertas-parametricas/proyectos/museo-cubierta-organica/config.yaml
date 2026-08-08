@@ -1,0 +1,71 @@
+# =============================================================================
+# CONFIGURACIÓN DEL PROYECTO - MUSEO CUBIERTA ORGÁNICA
+# =============================================================================
+# Archivo de configuración para el proyecto de cubierta orgánica de museo.
+# Este archivo es leído por Grasshopper y los scripts Python.
+# =============================================================================
+
+project:
+  name: "Museo - Cubierta Orgánica"
+  code: "ORG-MUSEO-2512"
+  client: "Cliente Ejemplo"
+  created: "2025-12-27"
+  status: "En diseño"
+  description: "Cubierta orgánica paramétrica para galería principal de museo"
+
+# Configuración de geometría
+geometry:
+  type: "organic"              # organic | tensile | gridshell | folded | shell | vault
+  width: 15.0                  # metros - Ancho del museo
+  length: 26.0                 # metros - Largo del museo
+  max_height: 8.5              # metros - Altura máxima en cenit
+  tension: 0.65                # Factor de curvatura (0-1)
+  asymmetry: 0.0               # Factor de asimetría (-1 a 1)
+  curve_degree: 3              # Grado de curvas de interpolación
+  rebuild_count: 50            # Puntos de reconstrucción
+
+# Restricciones estructurales
+constraints:
+  max_span: 15.0               # metros - Luz libre máxima
+  min_slope: 2.0               # % - Pendiente mínima para drenaje
+  max_deflection: 250          # L/X donde L es la luz
+
+# Configuración de paneles
+panels:
+  module_width: 2.0            # metros
+  module_height: 1.5           # metros
+  u_count: 13                  # Divisiones en U
+  v_count: 10                  # Divisiones en V
+  material: "polycarbonate_16mm"
+  tolerance: 5.0               # mm - Tolerancia de planarización
+
+# Presupuesto
+budget:
+  total: 280000                # MXN
+  currency: "MXN"
+  target_flat_percent: 78      # % objetivo de paneles planos
+
+# Configuración de exportación
+export:
+  revit_family: "Cubierta_Panel_Adaptive"
+  ifc_version: "IFC4"
+  units: "millimeters"
+  schedule_name: "BIMAC_Cubierta_Paneles"
+
+# Metadatos ISO 19650
+metadata:
+  project_code: "MUSEO"
+  originator: "BIMAC"
+  volume: "ZZ"
+  level: "00"
+  type: "M3"
+  role: "A"
+  classification: "0001"
+
+# Webhook para notificaciones (opcional)
+notifications:
+  enabled: true
+  webhook_url: "http://localhost:5678/webhook/cubierta-cost-update"
+  channels:
+    - "slack"
+    - "airtable"

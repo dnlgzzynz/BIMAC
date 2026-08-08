@@ -1,0 +1,302 @@
+# C01 - Escalera Helicoidal Parametrica
+# Configuracion del componente
+
+component:
+  id: "C01"
+  name: "Escalera Helicoidal Parametrica"
+  category: "circulaciones"
+  version: "1.0.0"
+  author: "BIMAC"
+  created: "2025-12-27"
+  status: "development"
+
+# Parametros por defecto
+defaults:
+  geometry:
+    floor_to_floor: 3000       # mm
+    outer_diameter: 2000       # mm
+    inner_diameter: 200        # mm (columna central)
+    rotation_angle: 360        # grados
+    rotation_direction: "CCW"  # CCW (antihorario) | CW (horario)
+    start_angle: 0             # grados (orientacion inicial)
+
+  treads:
+    riser_height: 175          # mm (altura de contrahuella)
+    tread_thickness: 40        # mm
+    nosing: 25                 # mm (proyeccion de nariz)
+    material: "steel"
+    finish: "antislip"
+    open_riser: true           # Contrahuella abierta
+
+  structure:
+    type: "central_column"     # Tipo de estructura
+    column_diameter: 150       # mm
+    column_thickness: 6        # mm
+    column_material: "steel"
+    base_plate_diameter: 400   # mm
+    base_plate_thickness: 20   # mm
+
+  railing:
+    handrail_height: 1000      # mm
+    handrail_diameter: 42      # mm
+    handrail_material: "steel"
+    inner_handrail: true
+    outer_handrail: true
+    baluster_type: "round"     # round | square | panel | cable
+    baluster_diameter: 16      # mm
+    baluster_spacing: 120      # mm
+    infill_type: "balusters"   # balusters | glass | cable | solid
+
+  landing:
+    include_landing: false
+    landing_angle: 0           # grados
+    landing_width: 1000        # mm
+    landing_depth: 1000        # mm
+
+# Tipologias de estructura
+structure_types:
+  central_column:
+    name: "Columna Central"
+    description: "Peldanos soldados a columna central"
+    min_diameter: 1400
+    max_diameter: 3000
+    supports_cantilever: true
+    material_options: ["steel", "concrete"]
+
+  cantilever:
+    name: "Voladizo desde Muro"
+    description: "Peldanos empotrados en muro curvo"
+    min_diameter: 1600
+    max_diameter: 2500
+    requires_wall: true
+    material_options: ["steel", "concrete"]
+
+  perimeter_beam:
+    name: "Viga Perimetral"
+    description: "Estructura helicoidal perimetral"
+    min_diameter: 1800
+    max_diameter: 4000
+    supports_cantilever: false
+    material_options: ["steel"]
+
+  double_stringer:
+    name: "Doble Larguero"
+    description: "Largueros interior y exterior"
+    min_diameter: 1600
+    max_diameter: 3500
+    supports_cantilever: false
+    material_options: ["steel", "wood"]
+
+  suspended:
+    name: "Suspendida"
+    description: "Colgada de estructura superior"
+    min_diameter: 1600
+    max_diameter: 3000
+    requires_ceiling: true
+    material_options: ["steel"]
+
+# Materiales de peldanos
+tread_materials:
+  steel:
+    name: "Acero"
+    thickness_min: 6
+    thickness_typical: 8
+    weight: 7850               # kg/m3
+    finish_options: ["paint", "galvanize", "antislip"]
+    cost_per_m2: 2800
+
+  wood:
+    name: "Madera"
+    thickness_min: 35
+    thickness_typical: 45
+    weight: 700
+    species_options: ["oak", "maple", "walnut", "pine"]
+    cost_per_m2: 4500
+
+  glass:
+    name: "Vidrio"
+    thickness_min: 30          # Laminado
+    thickness_typical: 36
+    weight: 2500
+    type: "laminated"
+    cost_per_m2: 8500
+
+  concrete:
+    name: "Concreto"
+    thickness_min: 50
+    thickness_typical: 80
+    weight: 2400
+    finish_options: ["polished", "exposed", "tile"]
+    cost_per_m2: 3200
+
+  composite:
+    name: "Compuesto"
+    thickness_min: 30
+    thickness_typical: 40
+    weight: 1200
+    description: "Acero + madera/vidrio"
+    cost_per_m2: 5500
+
+# Tipos de barandal
+railing_types:
+  balusters:
+    name: "Balaustres"
+    spacing_max: 100           # mm (seguridad infantil)
+    materials: ["steel", "wood", "aluminum"]
+
+  glass_panel:
+    name: "Panel de Vidrio"
+    glass_thickness: 12        # mm templado
+    frame_type: "framed"       # framed | frameless
+    materials: ["glass", "steel"]
+
+  cable:
+    name: "Cable Tensado"
+    cable_diameter: 4          # mm
+    cable_spacing: 75          # mm
+    materials: ["stainless_steel"]
+
+  solid_panel:
+    name: "Panel Solido"
+    panel_thickness: 3         # mm
+    materials: ["steel", "aluminum", "wood"]
+
+  perforated:
+    name: "Panel Perforado"
+    pattern: "round"           # round | square | custom
+    open_area: 40              # %
+    materials: ["steel", "aluminum"]
+
+# Normativas
+codes:
+  mexico_ntc:
+    name: "NTC-RCDF Mexico"
+    riser_max: 200
+    tread_min_center: 200      # En linea de paso
+    tread_min_outer: 250
+    headroom_min: 2050
+    handrail_height_min: 900
+    handrail_height_max: 1070
+    baluster_spacing_max: 100
+    width_min_residential: 900
+    width_min_commercial: 1200
+
+  ibc:
+    name: "International Building Code"
+    riser_max: 190             # 7.5"
+    riser_min: 102             # 4"
+    tread_min_walkline: 280    # 11" at walkline
+    walkline_radius: 305       # 12" from narrow end
+    headroom_min: 2030         # 80"
+    handrail_height_min: 865   # 34"
+    handrail_height_max: 965   # 38"
+    baluster_spacing_max: 102  # 4"
+    width_min: 660             # 26"
+
+  osha:
+    name: "OSHA Industrial"
+    riser_max: 241             # 9.5"
+    tread_min: 229             # 9"
+    handrail_height_min: 762   # 30"
+    handrail_height_max: 965   # 38"
+    width_min: 559             # 22"
+
+# Restricciones geometricas
+constraints:
+  geometry:
+    min_outer_diameter: 1400
+    max_outer_diameter: 4000
+    min_inner_diameter: 100
+    max_inner_diameter: 500
+    min_rotation: 180
+    max_rotation: 1080         # 3 vueltas
+    min_floor_height: 2400
+    max_floor_height: 6000
+
+  treads:
+    min_riser: 140
+    max_riser: 220
+    min_tread_inner: 100
+    max_nosing: 50
+    min_thickness: 6
+    max_thickness: 100
+
+  railing:
+    min_height: 850
+    max_height: 1100
+    min_handrail_diameter: 32
+    max_handrail_diameter: 57
+    max_baluster_spacing: 100
+
+# Costos (MXN)
+costs:
+  structure:
+    central_column_per_m: 4500
+    perimeter_beam_per_m: 8500
+    cantilever_per_tread: 2800
+
+  treads:
+    steel_per_piece: 1800
+    wood_per_piece: 3500
+    glass_per_piece: 6500
+    concrete_per_piece: 2200
+
+  railing:
+    handrail_per_m: 850
+    baluster_each: 180
+    glass_panel_per_m2: 4500
+    cable_per_m: 350
+
+  finishing:
+    powder_coat_per_m2: 380
+    galvanize_per_kg: 12
+    wood_stain_per_m2: 280
+    antislip_per_m2: 450
+
+  installation:
+    basic_per_floor: 8500
+    crane_per_day: 12000
+    specialized_per_floor: 15000
+
+# Parametros BIM
+bim:
+  shared_parameters:
+    - name: "BIMAC_Stair_Type"
+      type: "Text"
+      group: "Identity Data"
+    - name: "BIMAC_Stair_Diameter"
+      type: "Length"
+      group: "Dimensions"
+    - name: "BIMAC_Stair_Height"
+      type: "Length"
+      group: "Dimensions"
+    - name: "BIMAC_Stair_TreadCount"
+      type: "Integer"
+      group: "Dimensions"
+    - name: "BIMAC_Stair_Rotation"
+      type: "Angle"
+      group: "Dimensions"
+    - name: "BIMAC_Stair_CodeCompliance"
+      type: "YesNo"
+      group: "Other"
+
+  classification:
+    uniclass: "Ss_25_30_85"      # Stair systems
+    omniclass: "23-21 11 11"     # Spiral Stairs
+    ifc_class: "IfcStair"
+    ifc_type: "SPIRAL_STAIR"
+
+# Exportacion
+export:
+  revit:
+    family_template: "Metric Stairs.rft"
+    category: "Stairs"
+    use_adaptive: true
+    schedule_name: "BIMAC_Spiral_Stair_Schedule"
+
+  ifc:
+    version: "IFC4"
+    decompose_to_elements: true
+    property_sets:
+      - "Pset_StairCommon"
+      - "BIMAC_SpiralStairProperties"
